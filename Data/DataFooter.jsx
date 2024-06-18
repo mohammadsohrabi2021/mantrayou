@@ -1,0 +1,16 @@
+export const dataFooter = [
+  { id: 1, title: "مراقبت از پوست", href: "" },
+  { id: 2, title: "آرایش", href: "" },
+  { id: 3, title:  "مراقبت از مو", href: "" },
+  { id: 4, title: "مکمل", href: "" },
+  { id: 5, title: "وبلاگ", href: "" },
+  { id: 6, title: "حک", href: "" },
+  { id: 7, title: "حفاظت از داده ها", href: "" },
+  { id: 8, title: "شرایط", href: "" },
+  { id: 9, title: "شغل ها", href: "" },
+  { id: 10, title: "  تماس با ما", href: "" },
+  { id: 11, title:  "ارسال و بازگردانی", href: "" },
+  { id: 12, title: "ثبت نام بازگشت", href: "" },
+  { id: 13, title:  "سوالات متداول", href: "" },
+  { id: 14, title:  "پروفایل", href: "" },
+];
