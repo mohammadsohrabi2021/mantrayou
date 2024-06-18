@@ -29,7 +29,7 @@ function FooterLayout() {
       p={{xs:'10px',md:'40px'}}
     >
       <Grid container  justifyContent="space-between" p={3} bgcolor={'#fff'} borderRadius={'15px'} sx={{boxShadow:' rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;'}}>
-        <Grid item xs={12}sm={6} md={3}>
+        <Grid display={'flex'} flexDirection={'column'}  alignItems={'center'} xs={12}sm={4} mb={4}>
           <Image
             src={logoSite}
             alt="لوگو سایت "
@@ -54,7 +54,7 @@ function FooterLayout() {
             <IconButton><LocalPhoneIcon /></IconButton>
           </Box>
         </Grid>
-        <Grid item xs={12}sm={6} md={2}>
+        <Grid item xs={6}sm={4} md={2}>
           <Typography sx={styleTypography} fontSize={'20px'}>فروشگاه آنلاین</Typography>
           {dataFooter.filter(item =>item.id<=5).map(
             (text) => (
@@ -64,7 +64,7 @@ function FooterLayout() {
             )
           )}
         </Grid>
-        <Grid item xs={12}sm={6} md={2}>
+        <Grid item xs={5}sm={4} md={2} >
           <Typography sx={styleTypography} fontSize={'20px'}>دنبال کردن</Typography>
           {dataFooter.filter(item =>item.id>5&&item.id<=9).map((text) => (
             <Typography key={text.id} style={{cursor:'pointer'}} sx={styleTypography} fontSize={'12px'} mr={1} mt={2} >
@@ -72,7 +72,7 @@ function FooterLayout() {
             </Typography>
           ))}
         </Grid>
-        <Grid item xs={12}sm={6} md={2}>
+        <Grid item xs={12}sm={6} md={2} my={{xs:3,md:0}}>
           <Typography sx={styleTypography} fontSize={'20px'}>خدمات مشتری</Typography>
           {dataFooter.filter(item =>item.id>9).map((text) => (
             <Typography key={text.id} style={{cursor:'pointer'}} sx={styleTypography} fontSize={'12px'} mr={1} mt={2} >
@@ -80,9 +80,9 @@ function FooterLayout() {
             </Typography>
           ))}
         </Grid>
-        <Grid item xs={12}sm={6} md={3}>
-         <Image src={logo} style={{width:'150px',height:'180px'}}/>
-         <Image src={logoZarin} style={{width:'150px',height:'180px'}}/>
+        <Grid display={'flex'} xs={12}sm={6} md={12} gap={4} justifyContent={{xs:'space-around',md:'center'}}>
+         <Image src={logo} style={{width:'100px',height:'130px'}}/>
+         <Image src={logoZarin} style={{width:'100px',height:'130px'}}/>
         </Grid>
       </Grid>
     </Box>
