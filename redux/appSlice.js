@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   // value: 0,
   muneListCategories: [],
+  activeItem:''
 
 };
 
@@ -13,9 +14,9 @@ export const appSlice = createSlice({
     saveMuneListCategories: (state, action) => {
       state.muneListCategories = action.payload;
     },
-    // saveCategoriesInfo: (state, action) => {
-    //   state.categories = action.payload;
-    // },
+    saveActiveItemInfo: (state, action) => {
+      state.activeItem = action.payload;
+    },
     // saveListsInfo: (state, action) => {
     //   state.lists = action.payload;
     // },
@@ -41,6 +42,7 @@ export const appSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   saveMuneListCategories: saveMuneListCategoriesMethod,
+  saveActiveItemInfo:saveActiveItemInfoMethod
  
 } = appSlice.actions;
 
