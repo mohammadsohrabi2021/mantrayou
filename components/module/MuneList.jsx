@@ -1,12 +1,5 @@
-import dataMune from "@/Data/DataMune";
-import {
-  Box,
-  Divider,
-  Grid,
-  IconButton,
-  List,
-  ListItemText,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box, Divider, Grid, IconButton, List, ListItemText } from "@mui/material";
 import Image from "next/image";
 import { ListItemStyled } from "../style/HeaderLayout";
 import logoSite from "../../assets/images/logoSite.png";
@@ -15,24 +8,32 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import PersonIcon from "@mui/icons-material/Person";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
-import { TreeItem } from "@mui/x-tree-view/TreeItem";
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useSelector } from "react-redux";
-import { useState } from "react";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
-export const MuneList = ({ toggleDrawer, activeItem, setActiveItem }) => {
-  const muneListCategories = useSelector(
-    (state) => state.app.muneListCategories
-  );
-  const[showMune,setShowMune]=useState(false)
-  console.log(muneListCategories, "muneListCategories");
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
+import { useDispatch, useSelector } from "react-redux";
+import { saveActiveItemInfoMethod } from "@/redux/appSlice";
+import dataMune from "@/Data/DataMune";
+import Link from "next/link";
+
+export const MuneList = ({ toggleDrawer, activeItem }) => {
+  const dispatch = useDispatch();
+  const muneListCategories = useSelector((state) => state.app.muneListCategories);
+  const [showMune, setShowMune] = useState(false);
+
+  const handleMenuItemClick = (id, hasChildren) => {
+    if (!hasChildren) {
+      toggleDrawer(false)();
+      dispatch(saveActiveItemInfoMethod(id));
+    }
+  };
+
   return (
     <Box
       role="presentation"
-      // onClick={toggleDrawer(false)}
       onKeyDown={toggleDrawer(false)}
       sx={{
         width: 250,
@@ -63,46 +64,56 @@ export const MuneList = ({ toggleDrawer, activeItem, setActiveItem }) => {
             button
             key={item.id}
             active={activeItem === item.id}
-            onClick={() => setActiveItem(item.id)}
-            sx={{ display: "flex", flexDirection:showMune&& "column",maxHeight:'170px',overflowY:'auto'  }}
+            onClick={() => handleMenuItemClick(item.id, item.id === 3)}
+            sx={{
+              display: "flex",
+              flexDirection: showMune && item.id === 3 ? "column" : "row",
+              alignItems: "center",
+              maxHeight: "170px",
+              overflowY: "auto",
+            }}
+          
           >
-            <ListItemText
-              primary={item.title}
-              sx={{ fontFamily: "iran-sans", fontWeight: "bold"}}
-              onClick={()=>setShowMune(!showMune)}
-            />
-         {item.id===3 &&   (showMune? <ArrowDropDownIcon/>:<ArrowLeftIcon/>)}
-            {showMune&& <>  {item.id === 3 && (
-                    <SimpleTreeView
-                      defaultCollapseIcon={<ExpandMoreIcon />}
-                      defaultExpandIcon={<ChevronRightIcon />}
-
-                    >
-                    
-                      {muneListCategories.map((category) => (
+            <Link href={item.href} >
+              <ListItemText
+                primary={item.title}
+                sx={{ fontFamily: "iran-sans", fontWeight: "bold" }}
+              />
+            </Link>
+            {item.id === 3 && (
+              <IconButton
+                onClick={() => setShowMune(!showMune)}
+                size="small"
+              >
+                {showMune ? <ArrowDropDownIcon /> : <ArrowLeftIcon />}
+              </IconButton>
+            )}
+            {showMune && item.id === 3 && (
+              <SimpleTreeView
+                defaultCollapseIcon={<ExpandMoreIcon />}
+                defaultExpandIcon={<ChevronRightIcon />}
+              >
+                {muneListCategories.map((category) => (
+                  <TreeItem
+                  itemId={category.id}
+                  label={category.name}
+                  key={category.id}
+                  >
+                    {category.childs &&
+                      category.childs.map((subCategory) => (
                         <TreeItem
-                          itemId={category.id}
-                          label={category.name}
-                          key={category.id}
-                        >
-                          {category.childs &&
-                            category.childs.map((subCategory) => (
-                              <TreeItem
-                                itemId={subCategory.id}
-                                label={subCategory.name}
-                                key={subCategory.id}
-                              />
-                            ))}
-                        </TreeItem>
+                        itemId={subCategory.id}
+                          label={subCategory.name}
+                          key={subCategory.id}
+                        />
                       ))}
-                    
-                    </SimpleTreeView>
-                  )}</>}
-           
+                  </TreeItem>
+                ))}
+              </SimpleTreeView>
+            )}
           </ListItemStyled>
         ))}
       </List>
-
       <Grid
         mt="auto"
         bgcolor={"#030218"}
