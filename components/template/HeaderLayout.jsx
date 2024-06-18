@@ -29,16 +29,21 @@ import {
 } from "../style/HeaderLayout";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllListsCategories } from "@/pages/api/mune/muneApi";
-import { saveMuneListCategoriesMethod } from "@/redux/appSlice";
+import { saveActiveItemInfoMethod, saveMuneListCategoriesMethod } from "@/redux/appSlice";
 import { CartList } from "../module/CartList";
 import { MuneList } from "../module/MuneList";
+import Link from "next/link";
 
 function HeaderLayout() {
   const dispatch = useDispatch();
+      // dispatch(saveActiveItemInfoMethod(dataMune[0].id))
   const muneListCategories = useSelector(
     (state) => state.app.muneListCategories
   );
-  const [activeItem, setActiveItem] = useState(dataMune[0].id);
+  const activeItem = useSelector(
+    (state) => state.app.activeItem
+  );
+  // const [activeItem, setActiveItem] = useState(dataMune[0].id);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -53,13 +58,17 @@ function HeaderLayout() {
     setCartDrawerOpen(open);
   };
 
-  const getAllListsMuneCategories = async () => {
-    const resData = await getAllListsCategories("2");
-    dispatch(saveMuneListCategoriesMethod(resData));
-  };
+  // const getAllListsMuneCategories = async () => {
+  //   const resData = await getAllListsCategories("2");
+  //   dispatch(saveMuneListCategoriesMethod(resData));
+  // };
 
   useEffect(() => {
-    getAllListsMuneCategories();
+    (async () => {
+      const resData = await getAllListsCategories("2");
+      dispatch(saveMuneListCategoriesMethod(resData));
+    })
+
   }, []);
   const handleMouseEnter = (event, item) => {
     if (item.id === 3) {
@@ -166,9 +175,9 @@ function HeaderLayout() {
               key={item.id}
               active={activeItem === item.id}
               onMouseEnter={(event) => handleMouseEnter(event, item)}
-              onClick={() => setActiveItem(item.id)}
+              onClick={() => dispatch(saveActiveItemInfoMethod(item.id))}
             >
-              {item.title}
+             <Link href={item.href}> {item.title}</Link>
               {item.id === 3 && (
                 <Popover
                   open={Boolean(anchorEl)}
@@ -205,7 +214,7 @@ function HeaderLayout() {
                       </ListItem>
                     ))}
                   </List>
-                  {subCategories.length > 0 && (
+                  {subCategories?.length > 0 && (
                     <Popover
                       anchorEl={subAnchorEl}
                       open={Boolean(subAnchorEl)}
@@ -248,7 +257,7 @@ function HeaderLayout() {
         </ul>
       </Grid>
       <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-        {MuneList({ toggleDrawer, activeItem, setActiveItem })}
+        {MuneList({ toggleDrawer, activeItem })}
       </Drawer>
       <Drawer
         anchor="left"
