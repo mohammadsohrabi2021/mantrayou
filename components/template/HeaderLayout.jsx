@@ -33,6 +33,7 @@ import { saveActiveItemInfoMethod, saveMuneListCategoriesMethod } from "@/redux/
 import { CartList } from "../module/CartList";
 import { MuneList } from "../module/MuneList";
 import Link from "next/link";
+import AccountMenu from "../module/AccountMenu";
 
 function HeaderLayout() {
   const dispatch = useDispatch();
@@ -43,6 +44,14 @@ function HeaderLayout() {
   const activeItem = useSelector(
     (state) => state.app.activeItem
   );
+  const [showMuneAccount, setShowMuneAccount] = useState(null);
+  const open = Boolean(showMuneAccount);
+  const handleClick = (event) => {
+    setShowMuneAccount(event.currentTarget);
+  };
+  const handleClose = () => {
+    setShowMuneAccount(null);
+  };
   // const [activeItem, setActiveItem] = useState(dataMune[0].id);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
@@ -57,11 +66,6 @@ function HeaderLayout() {
   const toggleCartDrawer = (open) => () => {
     setCartDrawerOpen(open);
   };
-
-  // const getAllListsMuneCategories = async () => {
-  //   const resData = await getAllListsCategories("2");
-  //   dispatch(saveMuneListCategoriesMethod(resData));
-  // };
 
   useEffect(() => {
     (async () => {
@@ -102,12 +106,11 @@ function HeaderLayout() {
       elevation={0}
       style={{
         background: "#fff",
-        boxShadow:
-          "rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px",
         padding: "0 10px",
        
       }}
     >
+      <AccountMenu showMuneAccount={showMuneAccount} handleClose={handleClose}open={open}/>
       <Toolbar
         style={{ justifyContent: "space-between" }}
         sx={{ padding: { xs: 0, md: "0 35px" } }}
@@ -149,7 +152,12 @@ function HeaderLayout() {
           <IconButton color="inherit">
             <FavoriteBorderIcon />
           </IconButton>
-          <IconButton color="inherit">
+          <IconButton  onClick={handleClick}
+            size="small"
+            sx={{ ml: 2 }}
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined} color="inherit">
             <PersonIcon />
           </IconButton>
           <IconButton color="inherit" onClick={toggleCartDrawer(true)}>
