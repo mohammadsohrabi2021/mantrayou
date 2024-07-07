@@ -15,6 +15,7 @@ const breadcrumbNameMap = {
   "/blog": "وبلاگ",
   "/about-us": "درباره ما",
   "/FrequentlyAskedQuestions": "سوالات متداول",
+  "/dashboard":"داشبورد مدیریت"
 };
 
 const CustomBreadcrumbs = () => {
