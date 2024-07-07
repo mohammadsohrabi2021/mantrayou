@@ -17,6 +17,7 @@ import Cookies from "js-cookie"; // نیاز به نصب js-cookie دارید
 import BannerLoginPage from "@/components/module/BannerLoginPage";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { Router, useRouter } from "next/router";
 
 function Login() {
   const {
@@ -41,7 +42,7 @@ function Login() {
   const [isPhoneInputDisabled, setIsPhoneInputDisabled] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState(""); // افزودن وضعیت برای ذخیره شماره تلفن
   const BASE_URL = "https://api.mantrayou.com/client";
-
+const router=useRouter()
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedPhoneNumber = localStorage.getItem('phoneNumber');
@@ -125,6 +126,7 @@ function Login() {
         if (response?.status == 200) {
           toast.success("ورود با ایمیل موفقیت‌آمیز بود");
           Cookies.set("token", response.data.access_token);
+          router.push('/profile')
         } else {
           toast.warning("ورود با ایمیل موفقیت‌آمیز نبود");
         }
@@ -157,6 +159,7 @@ function Login() {
           if (response?.status == 200) {
             Cookies.set("token", response.data.access_token);
             toast.success("ورود با تلفن همراه موفقیت‌آمیز بود");
+            router.push('/profile')
           } else {
             toast.warning("ورود با ایمیل موفقیت‌آمیز نبود");
           }
