@@ -1,20 +1,19 @@
 import React from 'react';
 import { Box, Button, Card, CardContent, CardMedia, Typography, Chip } from '@mui/material';
-import styled from 'styled-components';
+import { styled } from '@mui/system';
 
 const StyledCard = styled(Card)`
   position: relative;
   overflow: hidden;
   border-radius: 10px;
-  &:hover img {
-    transform: scale(1.1);
-    transition: transform 0.5s ease;
-  }
 `;
 
 const StyledCardMedia = styled(CardMedia)`
   height: 200px;
   transition: transform 0.5s ease;
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
 
 const DiscountedPrice = styled(Typography)`
@@ -35,7 +34,6 @@ const Rating = styled(Box)`
 `;
 
 const ProductCard = ({ product }) => {
-    console.log(product.image)
   return (
     <StyledCard>
       <Chip
