@@ -21,13 +21,13 @@ function Layout({ children }) {
             width: "100%",
             height: "60px",
             borderRadius: isAuthPage ? 0 : '2px',
-            boxShadow: isAuthPage ? 'none' : 'rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px',
             position: isAuthPage ? 'absolute' : 'relative',
             top: isAuthPage ? 0 : 'auto',
             left: isAuthPage ? 0 : 'auto',
             right: isAuthPage ? 0 : 'auto',
             zIndex: isAuthPage ? 1 : 'auto'
           }}
+          className={ isAuthPage ? 'none' : 'box-shadow'}
         >
           <CustomBreadcrumbs />
         </Grid>
