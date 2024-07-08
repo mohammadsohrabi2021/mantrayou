@@ -97,7 +97,7 @@ function HeaderLayout() {
     setSubAnchorEl(event.currentTarget);
   };
 
-  console.log(subCategories, "subCategories");
+
 
   return (
     <AppBar
