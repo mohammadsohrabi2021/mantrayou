@@ -21,7 +21,12 @@ export const dataBannerImageHomePage = [
     flexDirectionBoxText: 'column',
     widthImage: { xs: '100%', sm: '60%',md:'50%' },
     color: "#fff",
-    borderRadius: '20px'
+    borderRadius: '20px',
+    bgColor:"#ff9aa2",
+    textColor:"#333",
+    hoverBgColor:"#333",
+    hoverTextColor:"#ff9aa2",
+    borderColor:"#fff"
   },
   {
     id: 2,
@@ -40,7 +45,12 @@ export const dataBannerImageHomePage = [
     flexDirectionBoxText: "column",
     widthImage: { xs: '100%', sm: '60%',md:'50%' },
     color: "",
-    borderRadius: "20px"
+    borderRadius: "20px",
+    bgColor:"#fff",
+    textColor:"#000",
+    hoverBgColor:"#000",
+    hoverTextColor:"#fff",
+    borderColor:"#000"
   },
   {
     id: 3,
@@ -59,7 +69,12 @@ export const dataBannerImageHomePage = [
     flexDirectionBoxText: "column",
     widthImage: { xs: '100%', sm: '60%',md:'50%' },
     color: "",
-    borderRadius: "20px"
+    borderRadius: "20px",
+    bgColor:"#fff",
+    textColor:"#000",
+    hoverBgColor:"#000",
+    hoverTextColor:"#fff",
+    borderColor:"#000"
   },
   {
     id: 4,
@@ -78,7 +93,12 @@ export const dataBannerImageHomePage = [
     flexDirectionBoxText: "column",
     widthImage: { xs: '100%', sm: '60%',md:'50%' },
     color: "",
-    borderRadius: "20px"
+    borderRadius: "20px",
+     bgColor:"#fff",
+    textColor:"#000",
+    hoverBgColor:"#000",
+    hoverTextColor:"#fff",
+    borderColor:"#000"
   },
 ];
 export const products = [
