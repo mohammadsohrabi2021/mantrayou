@@ -3,7 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   // value: 0,
   muneListCategories: [],
-  activeItem:''
+  activeItem:'',
+  userInfo:'',
+  openDialog:false
 
 };
 
@@ -17,12 +19,12 @@ export const appSlice = createSlice({
     saveActiveItemInfo: (state, action) => {
       state.activeItem = action.payload;
     },
-    // saveListsInfo: (state, action) => {
-    //   state.lists = action.payload;
-    // },
-    // savedataListInfo: (state, action) => {
-    //   state.dataList = action.payload;
-    // },
+    saveUserInfo: (state, action) => {
+      state.userInfo = action.payload;
+    },
+    saveOpenDialogCheck: (state, action) => {
+      state.openDialog = action.payload;
+    },
     // loadCategoriesInfo: (state, action) => {
     //   state.loadCategory = action.payload;
     // },
@@ -42,7 +44,9 @@ export const appSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   saveMuneListCategories: saveMuneListCategoriesMethod,
-  saveActiveItemInfo:saveActiveItemInfoMethod
+  saveActiveItemInfo:saveActiveItemInfoMethod,
+  saveUserInfo:saveUserInfoMethod,
+  saveOpenDialogCheck:saveOpenDialogCheckMethod
  
 } = appSlice.actions;
 
