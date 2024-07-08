@@ -43,7 +43,7 @@ function Register() {
       const response = await axios.post(`${BASE_URL}/registration/create`, {
         email: data.email,
         password: data.password,
-        full_name: data.firstName,
+        full_name: `${data.firstName}-${data.lastName}`,
         birthday: `${year}-${
           month.toString().length > 1 ? month : `0${month}`
         }-${day.toString().length > 1 ? day : `0${day}`}`,
