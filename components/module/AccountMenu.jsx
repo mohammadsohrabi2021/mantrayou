@@ -18,10 +18,13 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DynamicModal from './DynamicModal'; // وارد کردن کامپوننت مودال داینامیک
+import { handleLogout } from '@/utils/handleLogout';
+import { useDispatch, useSelector } from 'react-redux';
+import { saveOpenDialogCheckMethod } from '@/redux/appSlice';
 
 function AccountMenu({ showMuneAccount, handleClose, open }) {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
+  // const [openDialog, setOpenDialog] = React.useState(false);
   const router = useRouter();
 
   React.useEffect(() => {
@@ -29,19 +32,15 @@ function AccountMenu({ showMuneAccount, handleClose, open }) {
     setIsAuthenticated(!!token);
   }, [router]);
 
-  const handleLogout = () => {
-    Cookies.remove('token');
-    toast.success("کاربر عزیز شما با موفقیت از اکاانت کاربری خود خارج شدید به امید دیدار مجدد شما");
-    router.push('/login');
-  };
+
+  const dispatch = useDispatch();
+  const openDialog = useSelector((state) => state.app.openDialog);
 
   const handleOpenDialog = () => {
-    setOpenDialog(true);
+    dispatch(saveOpenDialogCheckMethod(!openDialog));
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
+  
 
   const styleMune = {
     display: 'flex',
@@ -123,14 +122,6 @@ function AccountMenu({ showMuneAccount, handleClose, open }) {
           </Link>
         )}
       </Menu>
-
-      <DynamicModal
-        open={openDialog}
-        onClose={handleCloseDialog}
-        title="خروج از حساب کاربری"
-        description="کاربر محترم، آیا واقعا قصد خروج از اکانت کاربری سایت مانترا را دارید؟"
-        onConfirm={handleLogout}
-      />
     </>
   );
 }
