@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Typography, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import React from "react";
+import { CustomButton } from "../style/CustomButton";
 
 function BannerHomePage({
   width,
@@ -19,6 +20,12 @@ function BannerHomePage({
   widthImage,
   borderRadius,
   flexDirectionBoxText,
+  bgColor,
+  textColor,
+  hoverBgColor,
+  hoverTextColor,
+  // hoverTextColor,
+  borderColor
 }) {
     const matches = useMediaQuery('(max-width:600px)');
   console.log(matches);
@@ -46,6 +53,8 @@ function BannerHomePage({
         flexDirection={flexDirectionBoxText}
         justifyContent={justifyContent}
         alignItems={alignItems}
+        py={{xs:2,sm:0}}
+      
       >
         <Typography
           lineHeight={2}
@@ -62,10 +71,16 @@ function BannerHomePage({
           fontWeight={300}
           color={color}
           fontFamily={"iran-sans"}
+          textAlign={'center'}
+          mb={{xs:1,md:3}}
         >
           {discription}
         </Typography>
-        <Button>{textButton}</Button>
+        <CustomButton  bgColor={bgColor}
+              textColor={textColor}
+              hoverBgColor={hoverBgColor}
+              hoverTextColor={hoverTextColor}
+              borderColor={borderColor}  variant="outlined">{textButton}</CustomButton>
       </Grid>
     </Grid>
   );
