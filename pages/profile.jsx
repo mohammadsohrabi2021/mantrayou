@@ -4,11 +4,6 @@ import {
   Typography,
   Box,
   Button,
-  List,
-  ListItem,
-  Divider,
-  Link,
-  Paper,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -20,8 +15,16 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
-import { getDataAccountUser } from "./api/account/accountApi";
-import { saveOpenDialogCheckMethod, saveUserInfoMethod } from "@/redux/appSlice";
+import {
+  getDataAccountAddressesUserId,
+  getDataAccountUser,
+  postAddressesUser,
+} from "./api/account/accountApi";
+import {
+  saveAdressesUserInfoMethod,
+  saveOpenDialogCheckMethod,
+  saveUserInfoMethod,
+} from "@/redux/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
@@ -30,54 +33,72 @@ import TemplateProfile from "@/components/module/TemplateProfile";
 import DynamicModal from "@/components/module/DynamicModal";
 import { useRouter } from "next/router";
 import { handleLogout } from "@/utils/handleLogout";
+import { toast } from "react-toastify";
+import AddressCard from "@/components/module/AddressCard";
 
 function Profile() {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [expanded, setExpanded] = useState(false);
+  const userAdresses = useSelector((state) => state.app.addressesUser);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const openDialog = useSelector((state) => state.app.openDialog);
-const router=useRouter()
+  const router = useRouter();
   const handleOpenDialog = () => {
     dispatch(saveOpenDialogCheckMethod(!openDialog));
   };
-
 
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
+
+  const fetchUserData = async () => {
+    try {
+      const token = Cookies.get("token");
+      const resData = await getDataAccountUser(token);
+      dispatch(saveUserInfoMethod(resData));
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserAddressesData = async () => {
+      const token = Cookies.get("token");
+      const resData = await getDataAccountAddressesUserId(token, dataUser);
+      dispatch(saveAdressesUserInfoMethod(resData));
+  };
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = Cookies.get("token");
-        const resData = await getDataAccountUser(token);
-        dispatch(saveUserInfoMethod(resData));
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchUserData();
-  }, [dispatch]);
+    fetchUserAddressesData();
+  }, [saveAdressesUserInfoMethod,saveUserInfoMethod]);
 
   const dataUser = useSelector((state) => state.app.userInfo);
-  console.log(dataUser, "dataUser");
 
   if (loading) {
     return <CircularProgress />;
   }
   const [firstName, lastName] = dataUser.full_name.split("-");
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    const token = Cookies.get("token");
+    const resData = await postAddressesUser(token, data, dataUser);
+    if (resData?.status) {
+      fetchUserAddressesData();
+      toast.success(`${firstName} ${lastName} عزیز آدرس تو با موفقیت به لیست آدرس هات اضافه شد`)
+    }
+    reset({});
   };
+ 
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -203,6 +224,26 @@ const router=useRouter()
                       ذخیره
                     </Button>
                   </form>
+                  <Grid
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+                flexDirection={{xs:'column',sm:'row'}}
+                gap={{xs:0,sm:2}}
+mt={2}
+              >
+                {userAdresses?.length > 0 ? (
+                  <>
+                    {userAdresses.map((item) => (
+                      <AddressCard key={item?._id} {...item}/>
+                    ))}
+                  </>
+                ) : (
+                  <Typography fontFamily={"iran-sans"} color={"red"}>
+                    بدون ادرس
+                  </Typography>
+                )}
+              </Grid>
                 </AccordionDetails>
               </Accordion>
               <Accordion
@@ -256,7 +297,7 @@ const router=useRouter()
         onClose={handleOpenDialog}
         title="خروج از حساب کاربری"
         description={`${firstName} عزیز  آیا واقعا قصد خروج از اکانت کاربری  خودت از سایت مانترا رو داری؟  `}
-        onConfirm={()=>handleLogout(router,firstName,lastName)}
+        onConfirm={() => handleLogout(router, firstName, lastName)}
       />
     </Grid>
   );
