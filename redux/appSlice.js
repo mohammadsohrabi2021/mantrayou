@@ -5,7 +5,9 @@ const initialState = {
   muneListCategories: [],
   activeItem:'',
   userInfo:'',
-  openDialog:false
+  openDialog:false,
+  addressesUser:[],
+  products:[]
 
 };
 
@@ -24,6 +26,12 @@ export const appSlice = createSlice({
     },
     saveOpenDialogCheck: (state, action) => {
       state.openDialog = action.payload;
+    },
+    saveAdressesUserInfo: (state, action) => {
+      state.addressesUser = action.payload;
+    },
+    saveProductsInfo: (state, action) => {
+      state.products = action.payload;
     },
     // loadCategoriesInfo: (state, action) => {
     //   state.loadCategory = action.payload;
@@ -46,7 +54,9 @@ export const {
   saveMuneListCategories: saveMuneListCategoriesMethod,
   saveActiveItemInfo:saveActiveItemInfoMethod,
   saveUserInfo:saveUserInfoMethod,
-  saveOpenDialogCheck:saveOpenDialogCheckMethod
+  saveOpenDialogCheck:saveOpenDialogCheckMethod,
+  saveAdressesUserInfo:saveAdressesUserInfoMethod,
+  saveProductsInfo:saveProductsInfoMethod
  
 } = appSlice.actions;
 
