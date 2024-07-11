@@ -2,6 +2,9 @@ import { Box, Button, Grid, Typography, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 import { CustomButton } from "../style/CustomButton";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { CustomTextField } from "../style/CustomTextField";
 
 function BannerHomePage({
   width,
@@ -25,10 +28,28 @@ function BannerHomePage({
   hoverBgColor,
   hoverTextColor,
   // hoverTextColor,
-  borderColor
+  borderColor,
 }) {
-    const matches = useMediaQuery('(max-width:600px)');
-  console.log(matches);
+  const matches = useMediaQuery("(max-width:600px)");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+
+  const onSubmit = (data) => {
+    toast.success("فرم با موفقیت ارسال شد!", {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    reset();
+  };
   return (
     <Grid
       width={width}
@@ -44,7 +65,13 @@ function BannerHomePage({
       {matches ? (
         <Image src={image} style={{ width: "100%", height: "100%" }} />
       ) : (
-        <Image src={image} style={{ width: "70%", height: "100%" }} />
+        <Image
+          src={image}
+          style={{
+            width: title === "معاملات خبرنامه" ? "50%" : "70%",
+            height: "100%",
+          }}
+        />
       )}
 
       <Grid
@@ -53,8 +80,7 @@ function BannerHomePage({
         flexDirection={flexDirectionBoxText}
         justifyContent={justifyContent}
         alignItems={alignItems}
-        py={{xs:2,sm:0}}
-      
+        py={{ xs: 2, sm: 0 }}
       >
         <Typography
           lineHeight={2}
@@ -71,16 +97,105 @@ function BannerHomePage({
           fontWeight={300}
           color={color}
           fontFamily={"iran-sans"}
-          textAlign={'center'}
-          mb={{xs:1,md:3}}
+          textAlign={"center"}
+          mb={{ xs: 1, md: 3 }}
         >
           {discription}
         </Typography>
-        <CustomButton  bgColor={bgColor}
-              textColor={textColor}
-              hoverBgColor={hoverBgColor}
-              hoverTextColor={hoverTextColor}
-              borderColor={borderColor}  variant="outlined">{textButton}</CustomButton>
+        {/* <Grid width={"100%"}> */}
+          {title === "معاملات خبرنامه" && (
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Box mb={2}>
+                <CustomTextField
+                  {...register("fullName", {
+                    required: "نام و نام خانوادگی الزامی است",
+                  })}
+                  placeholder="نام و نام خانوادگی"
+                  style={{ width: "100%", padding: "8px", marginBottom: "4px" }}
+                />
+                {errors.fullName && (
+                  <Typography
+                    color={"red"}
+                    fontFamily={"iran-sans"}
+                    fontSize={"12px"}
+                  >
+                    {errors.fullName.message}
+                  </Typography>
+                )}
+              </Box>
+              <Box mb={2}>
+                <CustomTextField
+                  {...register("email", {
+                    required: "ایمیل الزامی است",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "ایمیل معتبر وارد کنید",
+                    },
+                  })}
+                  placeholder="ایمیل"
+                  style={{ width: "100%", padding: "8px", marginBottom: "4px" }}
+                />
+                {errors.email && (
+                  <Typography
+                    color={"red"}
+                    fontFamily={"iran-sans"}
+                    fontSize={"12px"}
+                  >
+                    {errors.email.message}
+                  </Typography>
+                )}
+              </Box>
+              <Box mb={2}>
+                <Grid display={'flex'} alignItems={'start'} justifyContent={'center'}gap={2} >
+                  <input
+                    {...register("terms", {
+                      required: "تایید قوانین الزامی است",
+                    })}
+                    type="checkbox"
+                    style={{margin:'5px 0 0 0', width:'20px',height:'20px',cursor:'pointer'}}
+                  />
+                 <Typography fontFamily={'iran-sans'} fontSize={'14px'} color={'gray'}  lineHeight={2}> با ثبت نام در خبرنامه، موافقت می کنم که داده های من مطابق با
+                  سیاست حفظ حریم خصوصی پردازش شود. من می توانم رضایت خود را در
+                  هر زمانی لغو کنم، به عنوان مثال. با کلیک بر روی لینک لغو
+                  اشتراک در خبرنامه.</Typography>
+                </Grid>
+                {errors.terms && (
+                  <Typography
+                    color={"red"}
+                    fontFamily={"iran-sans"}
+                    fontSize={"12px"}
+                  >
+                    {errors.terms.message}
+                  </Typography>
+                )}
+              </Box>
+
+              <CustomButton
+                bgColor={bgColor}
+                textColor={textColor}
+                hoverBgColor={hoverBgColor}
+                hoverTextColor={hoverTextColor}
+                borderColor={borderColor}
+                variant="outlined"
+                type="submit"
+              >
+                {textButton}
+              </CustomButton>
+            </form>
+          )}
+        {/* </Grid> */}
+        {title === "معاملات خبرنامه" ? null : (
+          <CustomButton
+            bgColor={bgColor}
+            textColor={textColor}
+            hoverBgColor={hoverBgColor}
+            hoverTextColor={hoverTextColor}
+            borderColor={borderColor}
+            variant="outlined"
+          >
+            {textButton}
+          </CustomButton>
+        )}
       </Grid>
     </Grid>
   );
