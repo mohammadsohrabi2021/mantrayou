@@ -51,7 +51,7 @@ const AddressCard = ({
     <>
       <Card
         style={{
-          maxWidth: 400,
+          maxWidth: 340,
           margin: "20px auto",
           padding: "10px",
           position: "relative",
