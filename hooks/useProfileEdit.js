@@ -25,7 +25,7 @@ const useProfileEdit = (initialData, fetchUserData) => {
       toast.error("خطا در به‌روزرسانی اطلاعات");
     }
   };
-console.log(birthday)
+
   return {
     firstName,
     lastName,
