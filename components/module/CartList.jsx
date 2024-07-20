@@ -37,16 +37,26 @@ export const CartList = ({ toggleCartDrawer }) => {
 
   return (
     <Box
-      role="presentation"
-      onKeyDown={toggleCartDrawer(false)}
-      sx={{
-        width: {xs:300,sm:400},
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: "background.paper",
-        textAlign: "center",
-      }}
+    role="presentation"
+    onKeyDown={toggleCartDrawer(false)}
+    sx={{
+      width: {
+        xs: 300, // برای صفحه نمایش کوچکتر از ۳۲۰ پیکسل
+        sm: 400, // برای صفحه نمایش بزرگتر از ۳۲۰ پیکسل
+      },
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      bgcolor: "background.paper",
+      textAlign: "center",
+      "@media (min-width: 370px)": {
+        width: 350, // برای صفحه نمایش بزرگتر از ۳۷۵ پیکسل
+      },
+      "@media (min-width: 425px)": {
+        width: 400, // برای صفحه نمایش بزرگتر از ۳۷۵ پیکسل
+      },
+    }}
+  
     >
       <Grid container alignItems="center" p={1}>
         <Grid
