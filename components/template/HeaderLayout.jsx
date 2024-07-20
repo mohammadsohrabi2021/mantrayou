@@ -10,6 +10,7 @@ import {
   ListItem,
   ListItemText,
   Menu,
+  Badge
 } from "@mui/material";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import PersonIcon from "@mui/icons-material/Person";
@@ -29,35 +30,50 @@ import {
 } from "../style/HeaderLayout";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllListsCategories } from "@/pages/api/mune/muneApi";
-import { saveActiveItemInfoMethod, saveMuneListCategoriesMethod } from "@/redux/appSlice";
+import {
+  saveActiveItemInfoMethod,
+  saveMuneListCategoriesMethod,
+} from "@/redux/appSlice";
 import { CartList } from "../module/CartList";
 import { MuneList } from "../module/MuneList";
 import Link from "next/link";
 import AccountMenu from "../module/AccountMenu";
 
 function HeaderLayout() {
+  const [mounted, setMounted] = useState(false);
   const dispatch = useDispatch();
-      // dispatch(saveActiveItemInfoMethod(dataMune[0].id))
-  const muneListCategories = useSelector(
-    (state) => state.app.muneListCategories
-  );
-  const activeItem = useSelector(
-    (state) => state.app.activeItem
-  );
+  const cart = useSelector((state) => state.app.cart);
+  const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+  const muneListCategories = useSelector((state) => state.app.muneListCategories);
+  const activeItem = useSelector((state) => state.app.activeItem);
+
   const [showMuneAccount, setShowMuneAccount] = useState(null);
   const open = Boolean(showMuneAccount);
-  const handleClick = (event) => {
-    setShowMuneAccount(event.currentTarget);
-  };
-  const handleClose = () => {
-    setShowMuneAccount(null);
-  };
-  // const [activeItem, setActiveItem] = useState(dataMune[0].id);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [subCategories, setSubCategories] = useState([]);
   const [subAnchorEl, setSubAnchorEl] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const resData = await getAllListsCategories("2");
+      dispatch(saveMuneListCategoriesMethod(resData));
+    };
+    fetchData();
+  }, [dispatch]);
+
+  const handleClick = (event) => {
+    setShowMuneAccount(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setShowMuneAccount(null);
+  };
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
@@ -67,13 +83,6 @@ function HeaderLayout() {
     setCartDrawerOpen(open);
   };
 
-  useEffect(() => {
-    (async () => {
-      const resData = await getAllListsCategories("2");
-      dispatch(saveMuneListCategoriesMethod(resData));
-    })
-
-  }, []);
   const handleMouseEnter = (event, item) => {
     if (item.id === 3) {
       setAnchorEl(event.currentTarget);
@@ -89,28 +98,34 @@ function HeaderLayout() {
   };
 
   const handleCategoryHover = (event, category) => {
-    setSubCategories(category.childs); // اینجا باید تمام زیردسته‌ها داده شوند
-    setSubAnchorEl(event.currentTarget);
-  };
-  const handleSubCategoryHover=(event, category) => {
-    setSubCategories(category.childs); // اینجا باید تمام زیردسته‌ها داده شوند
+    setSubCategories(category.childs);
     setSubAnchorEl(event.currentTarget);
   };
 
+  const handleSubCategoryHover = (event, category) => {
+    setSubCategories(category.childs);
+    setSubAnchorEl(event.currentTarget);
+  };
 
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <AppBar
-      position='fixed'
+      position="fixed"
       color="default"
       elevation={0}
       style={{
         background: "#fff",
         padding: "0 10px",
-       
       }}
     >
-      <AccountMenu showMuneAccount={showMuneAccount} handleClose={handleClose}open={open}/>
+      <AccountMenu
+        showMuneAccount={showMuneAccount}
+        handleClose={handleClose}
+        open={open}
+      />
       <Toolbar
         style={{ justifyContent: "space-between" }}
         sx={{ padding: { xs: 0, md: "0 35px" } }}
@@ -152,16 +167,21 @@ function HeaderLayout() {
           <IconButton color="inherit">
             <FavoriteBorderIcon />
           </IconButton>
-          <IconButton  onClick={handleClick}
+          <IconButton
+            onClick={handleClick}
             size="small"
             sx={{ ml: 2 }}
-            aria-controls={open ? 'account-menu' : undefined}
+            aria-controls={open ? "account-menu" : undefined}
             aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined} color="inherit">
+            aria-expanded={open ? "true" : undefined}
+            color="inherit"
+          >
             <PersonIcon />
           </IconButton>
           <IconButton color="inherit" onClick={toggleCartDrawer(true)}>
-            <ShoppingCartOutlinedIcon />
+            <Badge badgeContent={cartItemCount} color="primary">
+              <ShoppingCartOutlinedIcon />
+            </Badge>
           </IconButton>
         </div>
       </Toolbar>
@@ -185,7 +205,7 @@ function HeaderLayout() {
               onMouseEnter={(event) => handleMouseEnter(event, item)}
               onClick={() => dispatch(saveActiveItemInfoMethod(item.id))}
             >
-             <Link href={item.href}> {item.title}</Link>
+              <Link href={item.href}> {item.title}</Link>
               {item.id === 3 && (
                 <Popover
                   open={Boolean(anchorEl)}
@@ -202,13 +222,19 @@ function HeaderLayout() {
                   PaperProps={{
                     onMouseLeave: handleCategoryMouseLeave,
                     style: {
-                      maxHeight: "400px", // You can adjust this as needed
-                      width: "200px", // Adjust the width based on your content
+                      maxHeight: "400px",
+                      width: "200px",
                       overflow: "auto",
                     },
                   }}
                 >
-                  <List sx={{display:'flex',flexDirection:'column', alignItems:'start'}}>
+                  <List
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "start",
+                    }}
+                  >
                     {muneListCategories.map((category) => (
                       <ListItem
                         button
@@ -238,8 +264,8 @@ function HeaderLayout() {
                       PaperProps={{
                         onMouseLeave: handleSubCategoryMouseLeave,
                         style: {
-                          maxHeight: "400px", // You can adjust this as needed
-                          width: "200px", // Adjust the width based on your content
+                          maxHeight: "400px",
+                          width: "200px",
                           overflow: "auto",
                         },
                       }}
@@ -265,14 +291,14 @@ function HeaderLayout() {
         </ul>
       </Grid>
       <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-        {MuneList({ toggleDrawer, activeItem })}
+        <MuneList toggleDrawer={toggleDrawer} activeItem={activeItem} />
       </Drawer>
       <Drawer
         anchor="left"
         open={cartDrawerOpen}
         onClose={toggleCartDrawer(false)}
       >
-        {CartList({ toggleCartDrawer })}
+        <CartList toggleCartDrawer={toggleCartDrawer} />
       </Drawer>
     </AppBar>
   );
