@@ -10,11 +10,11 @@ export const getDataAccountUser = async (token) => {
     }
   );
   const resData = await res.json();
-  console.log(resData);
+
   return resData;
 };
 export const getDataAccountAddressesUserId = async (token, dataUser) => {
-  console.log(dataUser?._id);
+
   const res = await fetch(
     `https://api.mantrayou.com/admin/accounts/addresses/${dataUser?._id}`,
     {
@@ -63,7 +63,7 @@ export const deletedAddressesUser = async (token, id) => {
     }
   );
   const resData = await res.json();
-  console.log(resData);
+
   return resData;
 };
 export const updateUserEmail = async (token, newEmail) => {
@@ -84,7 +84,7 @@ export const updateUserProfile = async (token, full_name, birthday) => {
   try {
     // بررسی اینکه آیا birthday یک شیء Date است
     const birthdayStr = birthday instanceof Date ? birthday.toISOString().split("T")[0] : birthday.split("T")[0];
-    console.log(birthdayStr);
+
 
     const res = await fetch(
       `https://api.mantrayou.com/client/my_account/basic_info`,
