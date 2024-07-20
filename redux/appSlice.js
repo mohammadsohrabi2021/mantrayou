@@ -1,14 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  // value: 0,
   muneListCategories: [],
-  activeItem:'',
-  userInfo:'',
-  openDialog:false,
-  addressesUser:[],
-  products:[]
-
+  activeItem: '',
+  userInfo: '',
+  openDialog: false,
+  addressesUser: [],
+  products: [],
+  cart: []
 };
 
 export const appSlice = createSlice({
@@ -33,31 +32,40 @@ export const appSlice = createSlice({
     saveProductsInfo: (state, action) => {
       state.products = action.payload;
     },
-    // loadCategoriesInfo: (state, action) => {
-    //   state.loadCategory = action.payload;
-    // },
-    // checkedInfo: (state, action) => {
-    //   state.checked = action.payload;
-    // },
-    // unitInfo: (state, action) => {
-    //   state.unitInfo = action.payload;
-    // },
-    // productInfo: (state, action) => {
-    //   state.products = action.payload;
-    // },
-
+    saveCartInfo: (state, action) => {
+      state.cart = action.payload;
+    },
+    addToCart: (state, action) => {
+      const existingProduct = state.cart.find(item => item.id === action.payload.id);
+      if (existingProduct) {
+        existingProduct.quantity += 1;
+      } else {
+        state.cart.push({ ...action.payload, quantity: 1 });
+      }
+    },
+    removeFromCart: (state, action) => {
+      state.cart = state.cart.filter(item => item.id !== action.payload.id);
+    },
+    updateCartQuantity: (state, action) => {
+      const product = state.cart.find(item => item.id === action.payload.id);
+      if (product) {
+        product.quantity = action.payload.quantity;
+      }
+    }
   },
 });
 
-// Action creators are generated for each case reducer function
 export const {
   saveMuneListCategories: saveMuneListCategoriesMethod,
-  saveActiveItemInfo:saveActiveItemInfoMethod,
-  saveUserInfo:saveUserInfoMethod,
-  saveOpenDialogCheck:saveOpenDialogCheckMethod,
-  saveAdressesUserInfo:saveAdressesUserInfoMethod,
-  saveProductsInfo:saveProductsInfoMethod
- 
+  saveActiveItemInfo: saveActiveItemInfoMethod,
+  saveUserInfo: saveUserInfoMethod,
+  saveOpenDialogCheck: saveOpenDialogCheckMethod,
+  saveAdressesUserInfo: saveAdressesUserInfoMethod,
+  saveProductsInfo: saveProductsInfoMethod,
+  saveCartInfo: saveCartInfoMethod,
+  addToCart: addToCartMethod,
+  removeFromCart: removeFromCartMethod,
+  updateCartQuantity: updateCartQuantityMethod
 } = appSlice.actions;
 
 export default appSlice.reducer;
