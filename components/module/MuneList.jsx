@@ -21,8 +21,8 @@ import Link from "next/link";
 
 export const MuneList = ({ toggleDrawer, activeItem }) => {
   const dispatch = useDispatch();
-  const muneListCategories = useSelector((state) => state.app.muneListCategories);
   const [showMune, setShowMune] = useState(false);
+  const muneListCategories = useSelector((state) => state.app.muneListCategories);
 
   const handleMenuItemClick = (id, hasChildren) => {
     if (!hasChildren) {
