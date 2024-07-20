@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,16 +7,20 @@ import {
   CardMedia,
   Typography,
   Chip,
+  IconButton
 } from "@mui/material";
 import { styled } from "@mui/system";
 import baseImage from '../../assets/images/logoSite.png'
-import Image from "next/image";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCartMethod, updateCartQuantityMethod, removeFromCartMethod } from "../../redux/appSlice";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+
 const StyledCard = styled(Card)`
   position: relative;
   overflow: hidden;
   border-radius: 10px;
-
 `;
 
 const StyledCardMedia = styled(CardMedia)`
@@ -59,6 +63,38 @@ const ProductCard = ({
   price_wd,
   _id
 }) => {
+  const [mounted, setMounted] = useState(false);
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.app.cart);
+  const productInCart = cart.find(item => item.id === (id !== undefined ? id : _id));
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleAddToCart = () => {
+    const product = {
+      id: id !== undefined ? id : _id,
+      name,
+      price,
+      price_wd,
+      variations,
+      main_image
+    };
+    dispatch(addToCartMethod(product));
+  };
+
+  const handleUpdateQuantity = (newQuantity) => {
+    if (newQuantity === 0) {
+      dispatch(removeFromCartMethod({ id: id !== undefined ? id : _id }));
+    } else {
+      dispatch(updateCartQuantityMethod({ id: id !== undefined ? id : _id, quantity: newQuantity }));
+    }
+  };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <StyledCard>
@@ -72,25 +108,37 @@ const ProductCard = ({
           color: "white",
         }}
       />
- <Link href={`/products/${id===undefined?_id:id}`}>     <StyledCardMedia
-        component="img"
-        image={main_image!==null?`https://api.mantrayou.com/images/${main_image}` :`${baseImage.src}`}
-        alt={name}
-      /></Link>
+      <Link href={`/products/${id === undefined ? _id : id}`}>
+        <StyledCardMedia
+          component="img"
+          image={main_image !== null ? `https://api.mantrayou.com/images/${main_image}` : `${baseImage.src}`}
+          alt={name}
+        />
+      </Link>
       <CardContent>
-        {/* <Typography variant="subname2" color="textSecondary">{product.brand}</Typography> */}
-        <Rating>
-          {/* <Typography variant="body2">{product.rating}</Typography>
-          <Typography variant="body2">({product.reviews})</Typography> */}
-        </Rating>
+        <Rating></Rating>
         <Typography fontFamily={'iran-sans'} fontWeight="bold">{name}</Typography>
         <Box display="flex" alignItems="center" my={1}>
           <OriginalPrice variant="body2">{price}€</OriginalPrice>
           <DiscountedPrice variant="body2">{price_wd}€</DiscountedPrice>
         </Box>
-        <Typography variant="body2" color="textSecondary">{has_variations? 'تنوع رنگ دارد':'تنوع رنگ ندارد'}</Typography>
-        <Typography variant="body2" color="textSecondary">{availability? 'موجود در انبار':'ناموجود'}</Typography>
-        <Button variant="outlined" fullWidth sx={{ mt: 2 }}>به سبد خرید اضافه کنید</Button>
+        <Typography variant="body2" color="textSecondary">{has_variations ? 'تنوع رنگ دارد' : 'تنوع رنگ ندارد'}</Typography>
+        <Typography variant="body2" color="textSecondary">{availability ? 'موجود در انبار' : 'ناموجود'}</Typography>
+        {productInCart ? (
+          <Box display="flex" alignItems="center">
+            <IconButton onClick={() => handleUpdateQuantity(productInCart.quantity - 1)}>
+              <RemoveIcon />
+            </IconButton>
+            <Typography>{productInCart.quantity}</Typography>
+            <IconButton onClick={() => handleUpdateQuantity(productInCart.quantity + 1)}>
+              <AddIcon />
+            </IconButton>
+          </Box>
+        ) : (
+          <Button variant="outlined" fullWidth sx={{ mt: 2, fontFamily: 'iran-sans' }} onClick={handleAddToCart}>
+            به سبد خرید اضافه کنید
+          </Button>
+        )}
       </CardContent>
     </StyledCard>
   );
