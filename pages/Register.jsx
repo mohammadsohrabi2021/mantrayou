@@ -35,7 +35,7 @@ function Register() {
   const [showPhoneVerification, setShowPhoneVerification] = useState(false);
   const BASE_URL = "https://api.mantrayou.com/client";
   const onSubmit = async (data) => {
-    console.log(data, "data");
+
     const year = data.birthday.getFullYear();
     const month = data.birthday.getMonth() + 1; // اضافه کردن 1 برای نمایش ماه به صورت عددی معمولی
     const day = data.birthday.getDate();
@@ -49,7 +49,7 @@ function Register() {
         }-${day.toString().length > 1 ? day : `0${day}`}`,
         phone_number: data.phone,
       });
-      console.log(response, "response");
+
       if (response?.statusText === "Created") {
         setShowPhoneVerification(true);
         toast.success("ثبت نام اولیه شما با موفقیت انجام شد");

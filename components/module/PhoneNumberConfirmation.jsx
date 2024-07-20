@@ -22,14 +22,12 @@ function PhoneNumberConfirmation() {
 const router =useRouter()
   const handlePhoneSubmit = async (data) => {
     const phoneData = data?.phone || getValues("phone");
-    console.log("Sending phone number:", phoneData);
     setLoading(true); // شروع بارگذاری
     try {
       const response = await axios.post(
         "https://api.mantrayou.com/client/registration/sms/send",
         { phone_number: phoneData }
       );
-      console.log(response, "response");
       if (response?.statusText === "OK") {
         setShowSMSValidation(true);
         toast.success("پیامک با موفقیت ارسال شد!");
@@ -50,7 +48,6 @@ const router =useRouter()
 
   const handleSMSValidation = async (data) => {
     setLoading(true); // شروع بارگذاری
-    console.log({ username: data.phone,password: data.code})
     try {
       const response = await axios.post(
         `https://api.mantrayou.com/client/registration/sms/validate`,
@@ -61,7 +58,7 @@ const router =useRouter()
           },
         }
       );
-      console.log(response);
+
       if (response.status==200) {
         toast.success(response.data.msg);
         router.push("/login"); // Redirect to login page
