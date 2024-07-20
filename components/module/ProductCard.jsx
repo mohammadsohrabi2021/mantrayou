@@ -9,11 +9,14 @@ import {
   Chip,
 } from "@mui/material";
 import { styled } from "@mui/system";
-
+import baseImage from '../../assets/images/logoSite.png'
+import Image from "next/image";
+import Link from "next/link";
 const StyledCard = styled(Card)`
   position: relative;
   overflow: hidden;
   border-radius: 10px;
+
 `;
 
 const StyledCardMedia = styled(CardMedia)`
@@ -53,8 +56,10 @@ const ProductCard = ({
   sell_count,
   variations,
   views_count,
-  price_wd
+  price_wd,
+  _id
 }) => {
+
   return (
     <StyledCard>
       <Chip
@@ -67,11 +72,11 @@ const ProductCard = ({
           color: "white",
         }}
       />
-      <StyledCardMedia
+ <Link href={`/products/${id===undefined?_id:id}`}>     <StyledCardMedia
         component="img"
-        image={`https://api.mantrayou.com/images/${main_image}`}
+        image={main_image!==null?`https://api.mantrayou.com/images/${main_image}` :`${baseImage.src}`}
         alt={name}
-      />
+      /></Link>
       <CardContent>
         {/* <Typography variant="subname2" color="textSecondary">{product.brand}</Typography> */}
         <Rating>
