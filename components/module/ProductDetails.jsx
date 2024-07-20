@@ -16,10 +16,14 @@ import baseImage from "../../assets/images/logoSite.png";
 
 const ProductDetails = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
-  const router = useRouter();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const selectedImage = product?.images[selectedImageIndex];
+  const router = useRouter();
   const thumbnailRef = useRef(null);
+  const selectedImage = product?.images[selectedImageIndex];
+
+  useEffect(() => {
+    scrollToThumbnail(selectedImageIndex);
+  }, [selectedImageIndex]);
 
   if (router.isFallback) {
     return (
@@ -71,20 +75,13 @@ const ProductDetails = ({ product }) => {
     }
   };
 
-  useEffect(() => {
-    scrollToThumbnail(selectedImageIndex);
-  }, [selectedImageIndex]);
-
   return (
     <Grid
-      //   className="box-shadow"
       my={4}
-      //   borderRadius={3}
       display={"flex"}
       flexDirection={{ xs: "column", md: "row-reverse" }}
       justifyContent={"space-between"}
-      alignItems={{md:'center'}}
-      //   p={{ xs: 1, sm: 4 }}
+      alignItems={{ md: "center" }}
       width={'100%'}
     >
       <Grid item xs={12} sm={4} md={4}>
@@ -104,13 +101,12 @@ const ProductDetails = ({ product }) => {
             }}
           >
             <Image
-              // src={`https://api.mantrayou.com/images/${selectedImage}`}
               src={
                 selectedImage !== undefined
                   ? `https://api.mantrayou.com/images/${selectedImage}`
                   : `${baseImage?.src}`
               }
-              alt={product?.name}
+              alt={product?.name || 'Product Image'}
               layout="fill"
               objectFit="contain"
               quality={100}
@@ -168,7 +164,7 @@ const ProductDetails = ({ product }) => {
               <Image
                 key={index}
                 src={`https://api.mantrayou.com/images/${image}`}
-                alt={product.name}
+                alt={`Thumbnail ${index + 1}`}
                 width={60}
                 height={60}
                 onClick={() => setSelectedImageIndex(index)}
@@ -191,7 +187,7 @@ const ProductDetails = ({ product }) => {
         my={4}
         borderRadius={2}
         p={{ xs: 2, sm: 4 }}
-        width={{xs:'100%',md:'50%'}}
+        width={{ xs: '100%', md: '50%' }}
       >
         <Typography variant="h4" fontWeight="bold">
           {product?.name}
