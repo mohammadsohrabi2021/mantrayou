@@ -130,7 +130,7 @@ const ProductReviews = ({ productId }) => {
       </Box>
     );
   }
-  console.log(reviews, user?._id);
+
   return (
     <Box mt={4} p={3} borderRadius={3} className={"box-shadow"}>
       <Typography fontSize={"18px"} mb={2} fontFamily={"iran-sans"}>
