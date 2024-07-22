@@ -10,17 +10,19 @@ import {
   IconButton
 } from "@mui/material";
 import { styled } from "@mui/system";
-import baseImage from '../../assets/images/logoSite.png'
+import baseImage from '../../assets/images/logoSite.png';
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCartMethod, updateCartQuantityMethod, removeFromCartMethod } from "../../redux/appSlice";
+import { addToCartMethod, updateCartQuantityMethod, removeFromCartMethod, setSelectedProductIdMethod, updateVariationSelectionMethod, updateQuantitySelectionMethod, resetVariationSelectionMethod } from "../../redux/appSlice";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import VariationModal from './VariationModal';
 
 const StyledCard = styled(Card)`
   position: relative;
   overflow: hidden;
   border-radius: 10px;
+  /* width: 300px; */
 `;
 
 const StyledCardMedia = styled(CardMedia)`
@@ -64,37 +66,68 @@ const ProductCard = ({
   _id
 }) => {
   const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.app.cart);
-  const productInCart = cart.find(item => item.id === (id !== undefined ? id : _id));
+  const selectedProductId = useSelector((state) => state.app.selectedProductId);
+  const selectedVariation = useSelector((state) => state.app.selectedVariation);
+  const selectedQuantity = useSelector((state) => state.app.selectedQuantity);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleAddToCart = () => {
+    if (has_variations) {
+      dispatch(setSelectedProductIdMethod(id !== undefined ? id : _id));
+      setOpen(true);
+    } else {
+      const product = {
+        id: id !== undefined ? id : _id,
+        name,
+        price,
+        price_wd,
+        variation: {},
+        main_image,
+        quantity: 1
+      };
+      dispatch(addToCartMethod(product));
+    }
+  };
+
+  const handleUpdateQuantity = (product, newQuantity) => {
+    const payload = {
+      id: product.id,
+      variation: product.variation || {}
+    };
+
+    if (newQuantity === 0) {
+      dispatch(removeFromCartMethod(payload));
+    } else {
+      dispatch(updateCartQuantityMethod({ ...payload, quantity: newQuantity }));
+    }
+  };
+
+  const handleSelectVariation = ({ variation, quantity }) => {
     const product = {
-      id: id !== undefined ? id : _id,
+      id: selectedProductId,
       name,
       price,
       price_wd,
-      variations,
-      main_image
+      variation: variation ? { color: variation } : {},
+      main_image,
+      quantity
     };
     dispatch(addToCartMethod(product));
-  };
-
-  const handleUpdateQuantity = (newQuantity) => {
-    if (newQuantity === 0) {
-      dispatch(removeFromCartMethod({ id: id !== undefined ? id : _id }));
-    } else {
-      dispatch(updateCartQuantityMethod({ id: id !== undefined ? id : _id, quantity: newQuantity }));
-    }
+    dispatch(resetVariationSelectionMethod());
+    setOpen(false); // Close the modal after selecting variation
   };
 
   if (!mounted) {
     return null;
   }
+
+  const productInCartWithoutVariations = cart.find(product => product.id === (id !== undefined ? id : _id) && (!product.variation || Object.keys(product.variation).length === 0));
 
   return (
     <StyledCard>
@@ -124,22 +157,35 @@ const ProductCard = ({
         </Box>
         <Typography variant="body2" color="textSecondary">{has_variations ? 'تنوع رنگ دارد' : 'تنوع رنگ ندارد'}</Typography>
         <Typography variant="body2" color="textSecondary">{availability ? 'موجود در انبار' : 'ناموجود'}</Typography>
-        {productInCart ? (
+        {productInCartWithoutVariations && !has_variations && (
           <Box display="flex" alignItems="center">
-            <IconButton onClick={() => handleUpdateQuantity(productInCart.quantity - 1)}>
+            <IconButton onClick={() => handleUpdateQuantity(productInCartWithoutVariations, productInCartWithoutVariations.quantity - 1)}>
               <RemoveIcon />
             </IconButton>
-            <Typography>{productInCart.quantity}</Typography>
-            <IconButton onClick={() => handleUpdateQuantity(productInCart.quantity + 1)}>
+            <Typography>{productInCartWithoutVariations.quantity}</Typography>
+            <IconButton onClick={() => handleUpdateQuantity(productInCartWithoutVariations, productInCartWithoutVariations.quantity + 1)}>
               <AddIcon />
             </IconButton>
           </Box>
-        ) : (
+        )}
+        {!has_variations && !productInCartWithoutVariations && (
           <Button variant="outlined" fullWidth sx={{ mt: 2, fontFamily: 'iran-sans' }} onClick={handleAddToCart}>
             به سبد خرید اضافه کنید
           </Button>
         )}
+        {has_variations && (
+          <Button variant="outlined" fullWidth sx={{ mt: 2, fontFamily: 'iran-sans' }} onClick={handleAddToCart}>
+            نوع را انتخاب کنید
+          </Button>
+        )}
       </CardContent>
+      <VariationModal 
+        open={open} 
+        onClose={() => setOpen(false)} 
+        variations={variations.map(v => v.color)} 
+        onSelect={handleSelectVariation} 
+        productName={name}
+      />
     </StyledCard>
   );
 };
