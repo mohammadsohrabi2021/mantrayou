@@ -9,6 +9,8 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import baseImage from '../../assets/images/logoSite.png';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { colorVariations } from "@/Data/DataColor"; // Import color variations
+
 export const CartList = ({ toggleCartDrawer }) => {
   const FREE_SHIPPING_THRESHOLD = 100000; // مقدار هدف برای ارسال رایگان
   const cart = useSelector((state) => state.app.cart);
@@ -19,12 +21,18 @@ export const CartList = ({ toggleCartDrawer }) => {
     setMounted(true);
   }, []);
 
-  const handleUpdateQuantity = (id, newQuantity) => {
+  const handleUpdateQuantity = (id, variation, newQuantity) => {
+    console.log(id)
     if (newQuantity === 0) {
-      dispatch(removeFromCartMethod({ id }));
+      dispatch(removeFromCartMethod({ id, variation }));
     } else {
-      dispatch(updateCartQuantityMethod({ id, quantity: newQuantity }));
+      dispatch(updateCartQuantityMethod({ id, variation, quantity: newQuantity }));
     }
+  };
+
+  const handleRemoveItem = (id, variation) => {
+    console.log(id)
+    dispatch(removeFromCartMethod({ id, variation }));
   };
 
   if (!mounted) {
@@ -37,26 +45,25 @@ export const CartList = ({ toggleCartDrawer }) => {
 
   return (
     <Box
-    role="presentation"
-    onKeyDown={toggleCartDrawer(false)}
-    sx={{
-      width: {
-        xs: 300, // برای صفحه نمایش کوچکتر از ۳۲۰ پیکسل
-        sm: 400, // برای صفحه نمایش بزرگتر از ۳۲۰ پیکسل
-      },
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      bgcolor: "background.paper",
-      textAlign: "center",
-      "@media (min-width: 370px)": {
-        width: 350, // برای صفحه نمایش بزرگتر از ۳۷۵ پیکسل
-      },
-      "@media (min-width: 425px)": {
-        width: 400, // برای صفحه نمایش بزرگتر از ۳۷۵ پیکسل
-      },
-    }}
-  
+      role="presentation"
+      onKeyDown={toggleCartDrawer(false)}
+      sx={{
+        width: {
+          xs: 300, // برای صفحه نمایش کوچکتر از ۳۲۰ پیکسل
+          sm: 400, // برای صفحه نمایش بزرگتر از ۳۲۰ پیکسل
+        },
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        bgcolor: "background.paper",
+        textAlign: "center",
+        "@media (min-width: 370px)": {
+          width: 350, // برای صفحه نمایش بزرگتر از ۳۷۵ پیکسل
+        },
+        "@media (min-width: 425px)": {
+          width: 400, // برای صفحه نمایش بزرگتر از ۳۷۵ پیکسل
+        },
+      }}
     >
       <Grid container alignItems="center" p={1}>
         <Grid
@@ -118,12 +125,12 @@ export const CartList = ({ toggleCartDrawer }) => {
           sx={{ overflowY: "auto" }}
         >
           {cart.map((item) => (
-            <Box key={item.id} display="flex" width="100%" mb={2} alignItems="center">
+            <Box key={`${item.id}-${item.variation?.color || ''}`} display="flex" width="100%" mb={1} height={'max-content'} borderRadius={'8px'} className={'box-shadow'} alignItems="center">
               <Image
                 src={item.main_image ? `https://api.mantrayou.com/images/${item.main_image}` : baseImage}
                 alt={item.name}
-                width={60}
-                height={60}
+                width={80}
+                height={80}
                 style={{ borderRadius: 8 }}
               />
               <Box ml={2} display="flex" flexDirection="column" flexGrow={1}>
@@ -131,24 +138,44 @@ export const CartList = ({ toggleCartDrawer }) => {
                 <Typography variant="body2" color="textSecondary">
                   {item.price_wd} €
                 </Typography>
+                {item.variation?.color && (
+                  <Box display="flex" alignItems="center" mt={1}  gap={1}>
+                    <Box
+                      sx={{
+                        width: 25,
+                        height: 25,
+                        bgcolor: colorVariations[item.variation.color],
+                        borderRadius: '50%',
+                        display: 'inline-block',
+                        marginRight: 4,
+                        border: '1px solid gray'
+                      }}
+                    
+                    />
+                    <Typography fontFamily={'iran-sans'} color="textSecondary">
+                     {item.variation.color}
+                    </Typography>
+                  </Box>
+                )}
               </Box>
-              <Box display="flex" alignItems="center">
+              <Box display="flex" alignItems="center" border={'1px solid lightGray'} borderRadius={1}>
                 <IconButton
                   size="small"
-                  onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                  onClick={() => handleUpdateQuantity(item.id, item.variation, item.quantity - 1)}
                 >
-                  <RemoveIcon />
+                  <RemoveIcon sx={{color:'red'}}/>
                 </IconButton>
                 <Typography>{item.quantity}</Typography>
                 <IconButton
                   size="small"
-                  onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                  variant={'button'}
+                  onClick={() => handleUpdateQuantity(item.id, item.variation, item.quantity + 1)}
                 >
-                  <AddIcon />
+                  <AddIcon sx={{color:'blue'}}/>
                 </IconButton>
               </Box>
               <Button
-                onClick={() => dispatch(removeFromCartMethod({ id: item.id }))}
+                onClick={() => handleRemoveItem(item.id, item.variation)}
                 size="small"
                 sx={{ textTransform: "none", color: "red" }}
               >
