@@ -7,7 +7,10 @@ const initialState = {
   openDialog: false,
   addressesUser: [],
   products: [],
-  cart: []
+  cart: [],
+  selectedVariation: null,
+  selectedQuantity: 1,
+  selectedProductId: null
 };
 
 export const appSlice = createSlice({
@@ -36,21 +39,37 @@ export const appSlice = createSlice({
       state.cart = action.payload;
     },
     addToCart: (state, action) => {
-      const existingProduct = state.cart.find(item => item.id === action.payload.id);
+      const { id, variation } = action.payload;
+      const existingProduct = state.cart.find(item => item.id === id && JSON.stringify(item.variation) === JSON.stringify(variation));
       if (existingProduct) {
-        existingProduct.quantity += 1;
+        existingProduct.quantity += action.payload.quantity;
       } else {
-        state.cart.push({ ...action.payload, quantity: 1 });
+        state.cart.push({ ...action.payload });
       }
     },
     removeFromCart: (state, action) => {
-      state.cart = state.cart.filter(item => item.id !== action.payload.id);
+      const { id, variation } = action.payload;
+      state.cart = state.cart.filter(item => !(item.id === id && JSON.stringify(item.variation) === JSON.stringify(variation)));
     },
     updateCartQuantity: (state, action) => {
-      const product = state.cart.find(item => item.id === action.payload.id);
+      const { id, variation, quantity } = action.payload;
+      const product = state.cart.find(item => item.id === id && JSON.stringify(item.variation) === JSON.stringify(variation));
       if (product) {
-        product.quantity = action.payload.quantity;
+        product.quantity = quantity;
       }
+    },
+    updateVariationSelection: (state, action) => {
+      state.selectedVariation = action.payload.variation;
+    },
+    updateQuantitySelection: (state, action) => {
+      state.selectedQuantity = action.payload.quantity;
+    },
+    resetVariationSelection: (state) => {
+      state.selectedVariation = null;
+      state.selectedQuantity = 1;
+    },
+    setSelectedProductId: (state, action) => {
+      state.selectedProductId = action.payload;
     }
   },
 });
@@ -65,7 +84,11 @@ export const {
   saveCartInfo: saveCartInfoMethod,
   addToCart: addToCartMethod,
   removeFromCart: removeFromCartMethod,
-  updateCartQuantity: updateCartQuantityMethod
+  updateCartQuantity: updateCartQuantityMethod,
+  updateVariationSelection: updateVariationSelectionMethod,
+  updateQuantitySelection: updateQuantitySelectionMethod,
+  resetVariationSelection: resetVariationSelectionMethod,
+  setSelectedProductId: setSelectedProductIdMethod
 } = appSlice.actions;
 
 export default appSlice.reducer;
