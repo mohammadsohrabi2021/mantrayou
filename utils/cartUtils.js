@@ -37,30 +37,45 @@ console.log(product)
       toast.success(response?.detail?.fa);
     }
   } catch (error) {
-    console.error("Failed to add product to cart:", error);
+    console.error("Failed to add product to cart:", error.detail);
     toast.error("خطا در افزودن محصول به سبد خرید");
   }
 };
 
 export const handleUpdateQuantity = async (dispatch, product, newQuantity) => {
   const token = Cookies.get("token");
+  const currentQuantity = product.quantity;
   const payload = {
     id: product.id || product._id,
     variation: product.variation || {},
   };
 
   if (newQuantity === 0) {
-    const response= await handleRemoveItem(dispatch, product, 1);
-    console.log(response)
-  } else {
-    // dispatch(updateCartQuantityMethod({ ...payload, quantity: newQuantity }));
+    await handleRemoveItem(dispatch, product, currentQuantity);
+  } else if (newQuantity > currentQuantity) {
     try {
-      const response= await addProductToCartAPI(token, {
+      const response = await addProductToCartAPI(token, {
         id: payload.id,
         variation: payload.variation,
-        quantity: newQuantity,
+        quantity: newQuantity - currentQuantity, // Add the difference
       });
-      console.log(response)
+      console.log(response);
+      if (response?.status) {
+        dispatch(updateCartQuantityMethod({ ...payload, quantity: newQuantity }));
+        toast.success("سبد خرید شما با موفقیت بروزرسانی شد");
+      }
+    } catch (error) {
+      console.error("Failed to update product quantity:", error);
+      toast.error("خطا در به‌روزرسانی تعداد محصول");
+    }
+  } else if (newQuantity < currentQuantity) {
+    try {
+      const response = await removeProductFromCartAPI(token, {
+        id: payload.id,
+        variation: payload.variation,
+        count: currentQuantity - newQuantity, // Remove the difference
+      });
+      console.log(response);
       if (response?.status) {
         dispatch(updateCartQuantityMethod({ ...payload, quantity: newQuantity }));
         toast.success("سبد خرید شما با موفقیت بروزرسانی شد");
@@ -72,8 +87,10 @@ export const handleUpdateQuantity = async (dispatch, product, newQuantity) => {
   }
 };
 
+
 export const handleRemoveItem = async (dispatch, product, count) => {
   const token = Cookies.get("token");
+  console.log(product, count)
   const payload = {
     id: product.id || product._id,
     variation: product.variation || {},
