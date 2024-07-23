@@ -25,6 +25,7 @@ const ProductDetails = ({ product }) => {
   const thumbnailRef = useRef(null);
   const selectedImage = product?.images[selectedImageIndex];
   const token = Cookies.get('token');
+  const totalQuantity = product?.variations?.reduce((acc, variation) => acc + variation.quantity, 0) || product.total_quantity;
 
   useEffect(() => {
     setMounted(true);
@@ -44,15 +45,18 @@ const ProductDetails = ({ product }) => {
       price_wd: product.price_wd,
       variation: selectedColor ? { color: selectedColor } : {},
       main_image: product.main_image,
-      quantity: quantity
+      quantity // Set quantity to 1 for each add to cart action
     };
-    console.log(!!productToAdd?.variation)
-    handleAddToCart(dispatch, productToAdd, productToAdd?.variation ? { color: selectedColor} : {});
+
+    const variation = product.has_variations ? { color: selectedColor } : {};
+    handleAddToCart(dispatch, productToAdd, variation);
   };
 
   const handleUpdateQuantityClick = (product, newQuantity) => {
-    handleUpdateQuantity(dispatch, token, product, newQuantity);
+    const productInCart = cart.find(item => item.id === product._id && (!item.variation || !item.variation.color));
+    handleUpdateQuantity(dispatch, { ...product, quantity: productInCart.quantity }, newQuantity);
   };
+  
 
   const handlePreviousImage = () => {
     setSelectedImageIndex((prevIndex) => {
@@ -164,8 +168,8 @@ const ProductDetails = ({ product }) => {
               </IconButton>
             </Box>
           ) : (
-            <Button variant="contained" color="primary" onClick={handleAddToCartClick} disabled={product.has_variations && !selectedColor}>
-              افزودن به سبد خرید
+            <Button variant="contained" color="primary" onClick={handleAddToCartClick} disabled={product.has_variations && (!selectedColor || totalQuantity === 0)}>
+              {totalQuantity === 0 ? 'ناموجود' : 'افزودن به سبد خرید'}
             </Button>
           )}
         </Box>
