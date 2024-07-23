@@ -1,17 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Button, Chip, CircularProgress, Grid, IconButton, Typography } from "@mui/material";
+import { Box, Button, Chip, Grid, IconButton, Typography } from "@mui/material";
 import Image from "next/image";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import baseImage from "../../assets/images/logoSite.png";
 import ColorSelector from './ColorSelector'; // Import the ColorSelector component
-import { addToCartMethod, updateCartQuantityMethod, removeFromCartMethod } from "../../redux/appSlice";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { handleAddToCart, handleUpdateQuantity } from "@/utils/cartUtils";
+import Cookies from "js-cookie";
 
 const ProductDetails = ({ product }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -23,6 +24,7 @@ const ProductDetails = ({ product }) => {
   const [mounted, setMounted] = useState(false);
   const thumbnailRef = useRef(null);
   const selectedImage = product?.images[selectedImageIndex];
+  const token = Cookies.get('token');
 
   useEffect(() => {
     setMounted(true);
@@ -34,47 +36,22 @@ const ProductDetails = ({ product }) => {
     }
   }, [selectedImageIndex]);
 
-  const handleAddToCart = () => {
-    if (product?.has_variations && selectedColor) {
-      const productToAdd = {
-        id: product._id,
-        name: product.name,
-        price: product.price,
-        price_wd: product.price_wd,
-        variation: { color: selectedColor },
-        main_image: product.main_image,
-        quantity: quantity,
-      };
-      dispatch(addToCartMethod(productToAdd));
-      setSelectedColor(product.variations[0]?.color);
-      setQuantity(1);
-      toast.success("محصول شما با موفقیت به سبد خرید اضافه شد");
-    } else if (!product.has_variations) {
-      const existingProduct = cart.find(item => item.id === product._id && !item.variation.color);
-      if (existingProduct) {
-        dispatch(updateCartQuantityMethod({ id: product._id, variation: {}, quantity: existingProduct.quantity + 1 }));
-      } else {
-        const productToAdd = {
-          id: product._id,
-          name: product.name,
-          price: product.price,
-          price_wd: product.price_wd,
-          variation: {},
-          main_image: product.main_image,
-          quantity: 1,
-        };
-        dispatch(addToCartMethod(productToAdd));
-        toast.success("محصول شما با موفقیت به سبد خرید اضافه شد");
-      }
-    }
+  const handleAddToCartClick = () => {
+    const productToAdd = {
+      id: product._id || product.id,
+      name: product.name,
+      price: product.price,
+      price_wd: product.price_wd,
+      variation: selectedColor ? { color: selectedColor } : {},
+      main_image: product.main_image,
+      quantity: quantity
+    };
+    console.log(!!productToAdd?.variation)
+    handleAddToCart(dispatch, productToAdd, productToAdd?.variation ? { color: selectedColor} : {});
   };
 
-  const handleUpdateQuantity = (id, variation, newQuantity) => {
-    if (newQuantity === 0) {
-      dispatch(removeFromCartMethod({ id, variation }));
-    } else {
-      dispatch(updateCartQuantityMethod({ id, variation, quantity: newQuantity }));
-    }
+  const handleUpdateQuantityClick = (product, newQuantity) => {
+    handleUpdateQuantity(dispatch, token, product, newQuantity);
   };
 
   const handlePreviousImage = () => {
@@ -105,7 +82,7 @@ const ProductDetails = ({ product }) => {
     }
   };
 
-  const productInCart = cart.find(item => item.id === product._id && !item.variation.color);
+  const productInCart = cart.find(item => item.id === product._id && (!item.variation || !item.variation.color));
 
   if (!mounted) {
     return null;
@@ -176,18 +153,18 @@ const ProductDetails = ({ product }) => {
         )}
         
         <Box mt={2}>
-          {(!product.has_variations && productInCart) ? (
+          {(!product?.has_variations && productInCart) ? (
             <Box display="flex" alignItems="center">
-              <IconButton onClick={() => handleUpdateQuantity(product._id, {}, productInCart.quantity - 1)}>
+              <IconButton onClick={() => handleUpdateQuantityClick(product, productInCart.quantity - 1)}>
                 <RemoveIcon />
               </IconButton>
               <Typography>{productInCart.quantity}</Typography>
-              <IconButton onClick={() => handleUpdateQuantity(product._id, {}, productInCart.quantity + 1)}>
+              <IconButton onClick={() => handleUpdateQuantityClick(product, productInCart.quantity + 1)}>
                 <AddIcon />
               </IconButton>
             </Box>
           ) : (
-            <Button variant="contained" color="primary" onClick={handleAddToCart} disabled={product.has_variations && !selectedColor}>
+            <Button variant="contained" color="primary" onClick={handleAddToCartClick} disabled={product.has_variations && !selectedColor}>
               افزودن به سبد خرید
             </Button>
           )}
