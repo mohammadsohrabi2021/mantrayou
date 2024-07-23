@@ -22,27 +22,31 @@ const getContrastingColor = (hex) => {
 const ColorSelector = ({ colors, selectedColor, onColorSelect, quantity, onQuantityChange }) => {
   return (
     <Box>
-      <Typography variant="h6">انتخاب رنگ:</Typography>
-      <Box display="flex" flexDirection="row" gap={2} mt={2}>
-        {colors.map((color, index) => (
-          <Box key={index} onClick={() => onColorSelect(color)} sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center',gap:2 }}>
-            <Box sx={{ width: 26, height: 26, bgcolor: colorVariations[color], borderRadius: '50%', border: selectedColor === color ? '2px solid #000' : '1px solid gray', position: 'relative', marginRight: 1 }}>
-              {selectedColor === color && (
-                <CheckIcon 
-                  sx={{ 
-                    color: color === 'سفید' ? '#000' : getContrastingColor(colorVariations[color]), 
-                    position: 'absolute', 
-                    top: '50%', 
-                    left: '50%', 
-                    transform: 'translate(-50%, -50%)' 
-                  }} 
-                />
-              )}
-            </Box>
-            <Typography fontFamily={'iran-sans'}>{color}</Typography>
+      {colors.length > 0 && (
+        <>
+          <Typography variant="h6">انتخاب رنگ:</Typography>
+          <Box display="flex" flexDirection="row" gap={2} mt={2}>
+            {colors.map((color, index) => (
+              <Box key={index} onClick={() => onColorSelect(color)} sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ width: 26, height: 26, bgcolor: colorVariations[color], borderRadius: '50%', border: selectedColor === color ? '2px solid #000' : '1px solid gray', position: 'relative', marginRight: 1 }}>
+                  {selectedColor === color && (
+                    <CheckIcon 
+                      sx={{ 
+                        color: color === 'سفید' ? '#000' : getContrastingColor(colorVariations[color]), 
+                        position: 'absolute', 
+                        top: '50%', 
+                        left: '50%', 
+                        transform: 'translate(-50%, -50%)' 
+                      }} 
+                    />
+                  )}
+                </Box>
+                <Typography fontFamily={'iran-sans'}>{color}</Typography>
+              </Box>
+            ))}
           </Box>
-        ))}
-      </Box>
+        </>
+      )}
       {selectedColor && (
         <Box display="flex" alignItems="center" mt={2}>
           <IconButton onClick={() => onQuantityChange(Math.max(1, quantity - 1))}>
