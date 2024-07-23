@@ -1,5 +1,12 @@
 export const addProductToCartAPI = async (token, { id, variation, quantity }) => {
-  console.log( id, variation, quantity )
+  // Check if variation is an empty object
+  const isVariationEmpty = !variation || Object.keys(variation).length === 0;
+
+  // If variation is empty, set quantity to 1
+  const finalQuantity = isVariationEmpty ? 1 : quantity;
+
+  console.log(id, variation, quantity);
+
   const res = await fetch(`https://api.mantrayou.com/client/cart/add_product`, {
     method: "POST",
     headers: {
@@ -8,13 +15,15 @@ export const addProductToCartAPI = async (token, { id, variation, quantity }) =>
     },
     body: JSON.stringify({
       product_id: id,
-      count: quantity,
+      count: finalQuantity,
       variation: variation || {},
     }),
   });
+
   if (!res.ok) {
     throw new Error("Failed to update cart");
   }
+
   const resData = await res.json();
   return resData;
 };
