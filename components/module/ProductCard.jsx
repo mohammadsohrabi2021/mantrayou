@@ -7,8 +7,11 @@ import {
   CardMedia,
   Typography,
   Chip,
-  IconButton
+  IconButton,
+  CircularProgress,
+  Grid
 } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from "@mui/system";
 import baseImage from '../../assets/images/logoSite.png';
 import Link from "next/link";
@@ -17,7 +20,8 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import VariationModal from './VariationModal';
 import { handleAddToCart, handleUpdateQuantity, handleRemoveItem } from "@/utils/cartUtils";
-import { setSelectedProductIdMethod, resetVariationSelectionMethod } from "@/redux/appSlice"; // Import the necessary methods
+import { setSelectedProductIdMethod, resetVariationSelectionMethod, setCartDrawerOpen } from "@/redux/appSlice"; // Import the necessary methods
+import Loader from "../icons/Loader";
 
 const StyledCard = styled(Card)`
   position: relative;
@@ -64,6 +68,8 @@ const ProductCard = ({
   variations,
   views_count,
   price_wd,
+  quantity,
+  total_quantity,
   _id
 }) => {
   const [mounted, setMounted] = useState(false);
@@ -73,16 +79,19 @@ const ProductCard = ({
   const selectedProductId = useSelector((state) => state.app.selectedProductId);
   const selectedVariation = useSelector((state) => state.app.selectedVariation);
   const selectedQuantity = useSelector((state) => state.app.selectedQuantity);
+  const [loading, setLoading] = useState(false);
+  const [loadingQuantity, setLoadingQuantity] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleAddToCartClick = () => {
+  const handleAddToCartClick = async() => {
     if (has_variations) {
       dispatch(setSelectedProductIdMethod(id !== undefined ? id : _id));
       setOpen(true);
     } else {
+      setLoading(true);
       const product = {
         id: id !== undefined ? id : _id,
         name,
@@ -90,17 +99,23 @@ const ProductCard = ({
         price_wd,
         variation: {},
         main_image,
-        quantity: 1
+        quantity:1
       };
-      handleAddToCart(dispatch, product);
+
+      await handleAddToCart(dispatch, product);
+      setLoading(false);
+      dispatch(setCartDrawerOpen(true));
     }
   };
 
-  const handleUpdateQuantityClick = (product, newQuantity) => {
-    handleUpdateQuantity(dispatch, product, newQuantity);
+  const handleUpdateQuantityClick = async(product, newQuantity) => {
+    console.log(product, newQuantity)
+    setLoadingQuantity(true);  // تنظیم وضعیت لودینگ برای کارت خاص
+    await handleUpdateQuantity(dispatch, product, newQuantity);
+    setLoadingQuantity(false);  // بازگشت وضعیت لودینگ به حالت قبلی پس از اتمام عملیات
   };
 
-  const handleSelectVariation = ({ variation, quantity }) => {
+  const handleSelectVariation = async({ variation, quantity }) => {
     const product = {
       id: selectedProductId,
       name,
@@ -110,9 +125,10 @@ const ProductCard = ({
       main_image,
       quantity
     };
-    handleAddToCart(dispatch, product, variation ? { color: variation } : {});
+    await handleAddToCart(dispatch, product, variation ? { color: variation } : {});
     dispatch(resetVariationSelectionMethod());
     setOpen(false);
+    dispatch(setCartDrawerOpen(true));
   };
 
   if (!mounted) {
@@ -136,7 +152,7 @@ const ProductCard = ({
       <Link href={`/products/${id === undefined ? _id : id}`}>
         <StyledCardMedia
           component="img"
-          image={main_image !== null ? `https://api.mantrayou.com/images/${main_image}` : `${baseImage.src}`}
+          image={main_image !== null ?`https://api.mantrayou.com/images/${main_image}` : `${baseImage.src}`}
           alt={name}
         />
       </Link>
@@ -150,24 +166,39 @@ const ProductCard = ({
         <Typography variant="body2" color="textSecondary">{has_variations ? 'تنوع رنگ دارد' : 'تنوع رنگ ندارد'}</Typography>
         <Typography variant="body2" color="textSecondary">{availability ? 'موجود در انبار' : 'ناموجود'}</Typography>
         {productInCartWithoutVariations && !has_variations && (
-          <Box display="flex" alignItems="center">
+          <Box display="flex" alignItems="center" mt={1.5} width={'max-content'} borderRadius={1} border={'1px solid lightGray'} justifyContent={'center'}>
             <IconButton onClick={() => handleUpdateQuantityClick(productInCartWithoutVariations, productInCartWithoutVariations.quantity - 1)}>
-              <RemoveIcon />
+              {productInCartWithoutVariations.quantity > 1 ? <RemoveIcon style={{color:'red'}}/>:<DeleteIcon  style={{color:'red'}}/>}
             </IconButton>
-            <Typography>{productInCartWithoutVariations.quantity}</Typography>
-            <IconButton onClick={() => handleUpdateQuantityClick(productInCartWithoutVariations, productInCartWithoutVariations.quantity + 1)}>
-              <AddIcon />
+            {loadingQuantity ? (
+              <Loader />
+            ) : (
+              <Grid display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
+                <Typography>{productInCartWithoutVariations.quantity}</Typography>
+                <Typography fontFamily={'iran-sans'} fontSize={'12px'} color={'red'}>{productInCartWithoutVariations.quantity >= total_quantity && "حداکثر"}</Typography>
+              </Grid>
+            )}
+            <IconButton 
+              onClick={() => handleUpdateQuantityClick(productInCartWithoutVariations, productInCartWithoutVariations.quantity + 1)}
+              disabled={productInCartWithoutVariations.quantity >= total_quantity}  // اضافه کردن شرط برای غیرفعال کردن دکمه
+            >
+              <AddIcon  style={{color:'green'}}/>
             </IconButton>
           </Box>
         )}
         {!has_variations && !productInCartWithoutVariations && (
-          <Button variant="outlined" fullWidth sx={{ mt: 2, fontFamily: 'iran-sans' }} onClick={handleAddToCartClick}>
-            به سبد خرید اضافه کنید
+          <Button variant="outlined" fullWidth sx={{ mt: 2, fontFamily: 'iran-sans' }} onClick={handleAddToCartClick} disabled={loading}>
+            {loading ?     <>
+                  <CircularProgress sx={{ color: "blue", ml: 1 }} size={24} />
+                  <Typography fontSize={"12px"} fontFamily={"iran-sans"}>
+                    در حال افزودن محصول به سبد خرید
+                  </Typography>
+                </> : 'به سبد خرید اضافه کنید'}
           </Button>
         )}
         {has_variations && (
-          <Button variant="outlined" fullWidth sx={{ mt: 2, fontFamily: 'iran-sans' }} onClick={handleAddToCartClick}>
-            نوع را انتخاب کنید
+          <Button variant="outlined" fullWidth sx={{ mt: 2, fontFamily: 'iran-sans' }} onClick={handleAddToCartClick} disabled={loading}>
+           نوع را انتخاب کنید
           </Button>
         )}
       </CardContent>
