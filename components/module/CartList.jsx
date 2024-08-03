@@ -10,23 +10,33 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import baseImage from '../../assets/images/logoSite.png';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { colorVariations } from "@/Data/DataColor"; // Import color variations
-import { showCartAPI, removeProductFromCartAPI } from "@/pages/api/cart/cartApi";
+import { showCartAPI, removeProductFromCartAPI, getFreeShippingThreshold, addProductToCartAPI } from "@/pages/api/cart/cartApi";
 import Cookies from "js-cookie";
 
 export const CartList = ({ toggleCartDrawer }) => {
-  const FREE_SHIPPING_THRESHOLD = 100000; // مقدار هدف برای ارسال رایگان
   const cart = useSelector((state) => state.app.cart);
+  const [loadingItems, setLoadingItems] = useState(() => {
+    // Initialize state from localStorage
+    const savedLoadingItems = localStorage.getItem('loadingItems');
+    return savedLoadingItems ? JSON.parse(savedLoadingItems) : {};
+  });
   const dispatch = useDispatch();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(100000);
 
   useEffect(() => {
     setMounted(true);
+    const fetchFreeShippingThreshold = async () => {
+      const threshold = await getFreeShippingThreshold();
+      if (threshold !== null) {
+        setFreeShippingThreshold(threshold);
+      }
+    };
     const fetchCart = async () => {
       const token = Cookies.get('token');
       try {
         const cartData = await showCartAPI(token);
-        console.log(cartData)
         const items = cartData.items.map(item => ({
           id: item.product_id,
           variation: item.variation,
@@ -43,17 +53,30 @@ export const CartList = ({ toggleCartDrawer }) => {
         setLoading(false);
       }
     };
+    fetchFreeShippingThreshold();
     fetchCart();
   }, [dispatch]);
 
+  useEffect(() => {
+    // Save loadingItems state to localStorage whenever it changes
+    localStorage.setItem('loadingItems', JSON.stringify(loadingItems));
+  }, [loadingItems]);
+
   const handleUpdateQuantity = async (id, variation, newQuantity) => {
     const token = Cookies.get('token');
-    if (newQuantity === 0) {
+    if (newQuantity <= 0) {
       await handleRemoveItem(id, variation, 1);
     } else {
-      dispatch(updateCartQuantityMethod({ id, variation, quantity: newQuantity }));
       try {
-        await removeProductFromCartAPI(token, { id, variation, count: 1 });
+        let response;
+        if (newQuantity > cart.find(item => item.id === id && item.variation.color === variation.color).quantity) {
+          response = await addProductToCartAPI(token, { id, variation, quantity: 1 });
+          setLoadingItems(prev => ({ ...prev, [`${id}-${variation.color}`]: response?.new_item_total_quantity }));
+        } else {
+          response = await removeProductFromCartAPI(token, { id, variation, count: 1 });
+          setLoadingItems(prev => ({ ...prev, [`${id}-${variation.color}`]: response?.new_item_total_quantity }));
+        }
+        dispatch(updateCartQuantityMethod({ id, variation, quantity: newQuantity }));
       } catch (error) {
         console.error("Failed to update product quantity:", error);
       }
@@ -75,17 +98,17 @@ export const CartList = ({ toggleCartDrawer }) => {
   }
 
   const totalPrice = cart.reduce((acc, item) => acc + item.price_wd * item.quantity, 0);
-  const progressPercentage = Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100);
-  const amountToFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - totalPrice, 0);
-
+  const progressPercentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
+  const amountToFreeShipping = Math.max(freeShippingThreshold - totalPrice, 0);
+console.log(loadingItems)
   return (
     <Box
       role="presentation"
       onKeyDown={toggleCartDrawer(false)}
       sx={{
         width: {
-          xs: 300, // برای صفحه نمایش کوچکتر از ۳۲۰ پیکسل
-          sm: 400, // برای صفحه نمایش بزرگتر از ۳۲۰ پیکسل
+          xs: 300,
+          sm: 400,
         },
         height: "100%",
         display: "flex",
@@ -93,10 +116,10 @@ export const CartList = ({ toggleCartDrawer }) => {
         bgcolor: "background.paper",
         textAlign: "center",
         "@media (min-width: 370px)": {
-          width: 350, // برای صفحه نمایش بزرگتر از ۳۷۵ پیکسل
+          width: 350,
         },
         "@media (min-width: 425px)": {
-          width: 400, // برای صفحه نمایش بزرگتر از ۳۷۵ پیکسل
+          width: 400,
         },
       }}
     >
@@ -205,13 +228,17 @@ export const CartList = ({ toggleCartDrawer }) => {
                     >
                       <RemoveIcon sx={{color:'red'}}/>
                     </IconButton>
-                    <Typography>{item.quantity}</Typography>
+                   <Grid display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}>
+                   <Typography>{item.quantity}</Typography>
+                   <Typography fontFamily={'iran-sans'} fontSize={'12px'} color={'red'}>{loadingItems[`${item.id}-${item.variation.color}`] === 0 && "حداکثر"}</Typography>
+                   </Grid>
                     <IconButton
                       size="small"
                       variant={'button'}
                       onClick={() => handleUpdateQuantity(item.id, item.variation, item.quantity + 1)}
+                      disabled={loadingItems[`${item.id}-${item.variation.color}`] === 0}
                     >
-                      <AddIcon sx={{color:'blue'}}/>
+                      <AddIcon sx={{color:loadingItems[`${item.id}-${item.variation.color}`] === 0 ? 'lightGray' : 'blue'}}/>
                     </IconButton>
                   </Box>
                   <Button
