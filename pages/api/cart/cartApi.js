@@ -5,7 +5,7 @@ export const addProductToCartAPI = async (token, { id, variation, quantity }) =>
   // If variation is empty, set quantity to 1
   const finalQuantity = isVariationEmpty ? 1 : quantity;
 
-  console.log(id, variation, quantity);
+  console.log(isVariationEmpty);
 
   const res = await fetch(`https://api.mantrayou.com/client/cart/add_product`, {
     method: "POST",
@@ -61,4 +61,24 @@ export const showCartAPI = async (token) => {
   }
   const resData = await res.json();
   return resData;
+};
+export const autoCompleteSearchAPI = async (term) => {
+  const response = await fetch(`https://api.mantrayou.com/client/products/search/auto_complete/?term=${term}`);
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch autocomplete results');
+  }
+
+  const resData = await response.json();
+  return resData;
+};
+export const getFreeShippingThreshold = async () => {
+  try {
+    const response = await fetch('https://api.mantrayou.com/client/general/free_shipping_threshold');
+    const data = await response.json();
+    return data.free_shipping_threshold.value;
+  } catch (error) {
+    console.error('Failed to fetch free shipping threshold:', error);
+    return null;
+  }
 };
