@@ -10,7 +10,7 @@ import {
   ListItem,
   ListItemText,
   Menu,
-  Badge
+  Badge,
 } from "@mui/material";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import PersonIcon from "@mui/icons-material/Person";
@@ -33,24 +33,29 @@ import { getAllListsCategories } from "@/pages/api/mune/muneApi";
 import {
   saveActiveItemInfoMethod,
   saveMuneListCategoriesMethod,
+  setCartDrawerOpen,
 } from "@/redux/appSlice";
 import { CartList } from "../module/CartList";
 import { MuneList } from "../module/MuneList";
 import Link from "next/link";
 import AccountMenu from "../module/AccountMenu";
+import AutoCompleteSearch from "../module/AutoCompleteSearch";
 
 function HeaderLayout() {
   const [mounted, setMounted] = useState(false);
+  const cartDrawerOpen = useSelector((state) => state.app.isCartDrawerOpen);
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.app.cart);
   const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
-  const muneListCategories = useSelector((state) => state.app.muneListCategories);
+  const muneListCategories = useSelector(
+    (state) => state.app.muneListCategories
+  );
   const activeItem = useSelector((state) => state.app.activeItem);
 
   const [showMuneAccount, setShowMuneAccount] = useState(null);
   const open = Boolean(showMuneAccount);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  // const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [subCategories, setSubCategories] = useState([]);
   const [subAnchorEl, setSubAnchorEl] = useState(null);
@@ -76,11 +81,11 @@ function HeaderLayout() {
   };
 
   const toggleDrawer = (open) => () => {
-    setDrawerOpen(open);
+    dispatch(setCartDrawerOpen(open));
   };
 
   const toggleCartDrawer = (open) => () => {
-    setCartDrawerOpen(open);
+    dispatch(setCartDrawerOpen(open));
   };
 
   const handleMouseEnter = (event, item) => {
@@ -152,13 +157,7 @@ function HeaderLayout() {
             maxWidth: { xs: "none", md: "450px" },
           }}
         >
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="جستجو کنید ...."
-            inputProps={{ "aria-label": "search" }}
-          />
+          <AutoCompleteSearch />
         </Search>
         <div>
           <IconButton color="inherit">
@@ -188,13 +187,7 @@ function HeaderLayout() {
       <Search
         sx={{ display: { xs: "flex", md: "none" }, margin: "10px 0 20px 0" }}
       >
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInputBase
-          placeholder="جستجو کنید ...."
-          inputProps={{ "aria-label": "search" }}
-        />
+        <AutoCompleteSearch />
       </Search>
       <Grid py={3} px={6.5} display={{ xs: "none", md: "flex" }}>
         <ul style={{ display: "flex", gap: "40px" }}>
