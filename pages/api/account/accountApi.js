@@ -16,7 +16,7 @@ export const getDataAccountUser = async (token) => {
 export const getDataAccountAddressesUserId = async (token, dataUser) => {
 
   const res = await fetch(
-    `https://api.mantrayou.com/admin/accounts/addresses/${dataUser?._id}`,
+    `https://api.mantrayou.com/client/my_account/addresses`,
     {
       method: "GET",
       headers: {
@@ -30,7 +30,7 @@ export const getDataAccountAddressesUserId = async (token, dataUser) => {
 };
 export const postAddressesUser = async (token, data, dataUser) => {
   const res = await fetch(
-    `https://api.mantrayou.com/admin/accounts/addresses/add/`,
+    `https://api.mantrayou.com/client/my_account/addresses/add`,
     {
       method: "POST",
       headers: {
@@ -115,4 +115,50 @@ export const updateUserProfile = async (token, full_name, birthday) => {
     throw error;
   }
 };
+// api/generalApi.js
+export const fetchProvinces = async () => {
+  try {
+    const response = await fetch('https://api.mantrayou.com/client/general/provinces');
+    if (!response.ok) throw new Error('Failed to fetch provinces');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching provinces:', error);
+    throw error;
+  }
+};
+
+export const fetchCities = async (provinceId) => {
+  try {
+    const response = await fetch(`https://api.mantrayou.com/client/general/${provinceId}/cities`);
+    if (!response.ok) throw new Error('Failed to fetch cities');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching cities:', error);
+    throw error;
+  }
+};
+
+const BASE_URL = "https://api.mantrayou.com";
+
+export const editAddressUser = async (token, addressId, addressData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/client/my_account/addresses/${addressId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(addressData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error editing address");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || "Error editing address");
+  }
+};
+
 
