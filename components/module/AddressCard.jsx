@@ -22,11 +22,13 @@ const AddressCard = ({
   province_name,
   user_id,
   _id,
+  onEdit
 }) => {
   const dispatch = useDispatch();
   const dataUser = useSelector((state) => state.app.userInfo);
   const [openDialogDeleted, setOpenDialogDeleted] = useState(false);
   const [firstName, lastName] = dataUser.full_name.split("-");
+  console.log(user_id)
   const onDelete = async (id) => {
     try {
       const token = Cookies.get("token");
@@ -47,6 +49,20 @@ const AddressCard = ({
   const handleOpenDialog = () => {
     setOpenDialogDeleted(!openDialogDeleted);
   };
+  const handleEditClick = () => {
+    const address = {
+      additional_notes,
+      address_name,
+      address_text,
+      city_name,
+      postal_code,
+      province_name,
+      user_id,
+      _id,
+    };
+    onEdit(address);
+  };
+
   return (
     <>
       <Card
@@ -96,12 +112,12 @@ const AddressCard = ({
             </Grid>
             <Grid item xs={12}>
               <Typography variant="body2" align="right" color="textSecondary">
-                <strong>کد کاربر:</strong> {user_id}
+                <strong>کد کاربر:</strong> {_id}
               </Typography>
             </Grid>
           </Grid>
           <Grid style={{ position: "absolute", top: 30, left: 10 }}>
-            <IconButton size="small" onClick={() => onEdit(_id)}>
+            <IconButton size="small"  onClick={handleEditClick}>
               <EditIcon sx={{ color: "green" }} />
             </IconButton>
             <IconButton size="small" onClick={handleOpenDialog}>
