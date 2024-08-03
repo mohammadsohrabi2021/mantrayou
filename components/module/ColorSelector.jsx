@@ -19,7 +19,7 @@ const getContrastingColor = (hex) => {
   return luminance > 0.5 ? '#000000' : '#FFFFFF';
 };
 
-const ColorSelector = ({ colors, selectedColor, onColorSelect, quantity, onQuantityChange }) => {
+const ColorSelector = ({ stock,colors, selectedColor, onColorSelect, quantity, onQuantityChange }) => {
   return (
     <Box>
       {colors.length > 0 && (
@@ -47,7 +47,7 @@ const ColorSelector = ({ colors, selectedColor, onColorSelect, quantity, onQuant
           </Box>
         </>
       )}
-      {selectedColor && (
+      {selectedColor&&stock !== 0 && (
         <Box display="flex" alignItems="center" mt={2}>
           <IconButton onClick={() => onQuantityChange(Math.max(1, quantity - 1))}>
             <RemoveIcon />
