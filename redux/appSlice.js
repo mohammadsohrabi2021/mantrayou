@@ -10,7 +10,9 @@ const initialState = {
   cart: [],
   selectedVariation: null,
   selectedQuantity: 1,
-  selectedProductId: null
+  selectedProductId: null,
+  stock: {}, // اضافه کردن استیت stock
+  isCartDrawerOpen: false,
 };
 
 export const appSlice = createSlice({
@@ -70,7 +72,21 @@ export const appSlice = createSlice({
     },
     setSelectedProductId: (state, action) => {
       state.selectedProductId = action.payload;
-    }
+    },
+    // اضافه کردن اکشن‌ها و ردیوسرهای مربوط به stock
+    setStock: (state, action) => {
+      const { productId, stock } = action.payload;
+      state.stock[productId] = stock;
+    },
+    updateStock: (state, action) => {
+      const { productId, quantity } = action.payload;
+      if (state.stock[productId] !== undefined) {
+        state.stock[productId] = Math.max(state.stock[productId] - quantity, 0); // جلوگیری از منفی شدن موجودی
+      }
+    },
+    setCartDrawerOpen: (state, action) => {
+      state.isCartDrawerOpen = action.payload;
+    },
   },
 });
 
@@ -88,7 +104,10 @@ export const {
   updateVariationSelection: updateVariationSelectionMethod,
   updateQuantitySelection: updateQuantitySelectionMethod,
   resetVariationSelection: resetVariationSelectionMethod,
-  setSelectedProductId: setSelectedProductIdMethod
+  setSelectedProductId: setSelectedProductIdMethod,
+  setStock, // اکسپورت اکشن‌های مربوط به stock
+  updateStock, // اکسپورت اکشن‌های مربوط به stock
+  setCartDrawerOpen,
 } = appSlice.actions;
 
 export default appSlice.reducer;
