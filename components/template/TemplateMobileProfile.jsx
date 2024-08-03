@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -10,6 +10,11 @@ import {
   TextareaAutosize,
   Typography,
   IconButton,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  CircularProgress
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -22,7 +27,7 @@ import AddressCard from "../module/AddressCard";
 import { toast } from "react-toastify";
 import useEmailEdit from "@/hooks/useEmailEdit";
 import useProfileEdit from "@/hooks/useProfileEdit";
-import { postAddressesUser } from "@/pages/api/account/accountApi";
+import { postAddressesUser, fetchProvinces, fetchCities, editAddressUser } from "@/pages/api/account/accountApi";
 import useBirthdayInfo from "@/hooks/useGregorianToJalali";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
@@ -39,6 +44,9 @@ function TemplateMobileProfile({ handleOpenDialog, fetchUserAddressesData, fetch
     setValue, // اضافه کردن setValue از react-hook-form
   } = useForm();
   const [expanded, setExpanded] = useState(false);
+  const [isEditingAddress, setIsEditingAddress] = useState(false); // اضافه کردن state برای ویرایش آدرس
+  const [loading, setLoading] = useState(false); // اضافه کردن state برای حالت لودینگ
+
   const userAdresses = useSelector((state) => state.app.addressesUser);
   const dataUser = useSelector((state) => state.app.userInfo);
   const [firstName, lastName] = dataUser.full_name.split("-");
@@ -67,20 +75,98 @@ function TemplateMobileProfile({ handleOpenDialog, fetchUserAddressesData, fetch
     setExpanded(isExpanded ? panel : false);
   };
 
+  const [provinces, setProvinces] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+
+  useEffect(() => {
+    const fetchProvincesData = async () => {
+      try {
+        const provincesData = await fetchProvinces();
+        setProvinces(provincesData);
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+      }
+    };
+
+    fetchProvincesData();
+  }, []);
+
+  useEffect(() => {
+    const fetchCitiesData = async () => {
+      if (!selectedProvince) return;
+      try {
+        const citiesData = await fetchCities(provinces.find(province => province.name === selectedProvince).id);
+        setCities(citiesData);
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      }
+    };
+
+    fetchCitiesData();
+  }, [selectedProvince, provinces]);
+
+  const handleProvinceChange = (event) => {
+    setSelectedProvince(event.target.value);
+    setSelectedCity('');
+    setValue("province_name", event.target.value); // تنظیم مقدار استان در react-hook-form
+  };
+
+  const handleCityChange = (event) => {
+    setSelectedCity(event.target.value);
+    setValue("city_name", event.target.value); // تنظیم مقدار شهر در react-hook-form
+  };
+
   const onSubmit = async (data) => {
     const token = Cookies.get("token");
-    const resData = await postAddressesUser(token, data, dataUser);
-    if (resData?.status) {
+    setLoading(true); // فعال کردن حالت لودینگ
+    try {
+      let resData;
+      if (data._id) {
+        // ویرایش آدرس موجود
+        resData = await editAddressUser(token, data._id, data);
+        if (resData?.status) {
+          toast.success(
+            `${firstName} ${lastName} عزیز آدرس تو با موفقیت ویرایش شد`
+          );
+        }
+      } else {
+        // ایجاد آدرس جدید
+        resData = await postAddressesUser(token, data, dataUser);
+        if (resData?.status) {
+          toast.success(
+            `${firstName} ${lastName} عزیز آدرس تو با موفقیت به لیست آدرس هات اضافه شد`
+          );
+        }
+      }
       fetchUserAddressesData();
-      toast.success(
-        `${firstName} ${lastName} عزیز آدرس تو با موفقیت به لیست آدرس هات اضافه شد`
-      );
+      reset({});
+      setSelectedProvince('');
+      setSelectedCity('');
+      setIsEditingAddress(false); // تنظیم حالت ویرایش به false
+    } catch (error) {
+      toast.error("خطا در ویرایش آدرس");
+      console.error("Error editing address:", error);
+    } finally {
+      setLoading(false); // غیرفعال کردن حالت لودینگ
     }
-    reset({});
   };
 
   const { jalaliDateStr, daysUntilBirthday } = useBirthdayInfo(birthday); // استفاده از هوک با مقدار birthday از پروفایل
-
+  const onEdit = (address) => {
+    setValue('address_name', address.address_name);
+    setValue('address_text', address.address_text);
+    setValue('city_name', address.city_name);
+    setValue('postal_code', address.postal_code);
+    setValue('province_name', address.province_name);
+    setValue('additional_notes', address.additional_notes);
+    setValue('user_id', address.user_id);
+    setValue('_id', address._id);
+    setSelectedProvince(address.province_name);
+    setSelectedCity(address.city_name);
+    setIsEditingAddress(true); // تنظیم حالت ویرایش به true
+  };
   return (
     <>
       <Grid
@@ -245,6 +331,52 @@ function TemplateMobileProfile({ handleOpenDialog, fetchUserAddressesData, fetch
           </AccordionSummary>
           <AccordionDetails>
             <form onSubmit={handleSubmit(onSubmit)}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="province-label">نام استان</InputLabel>
+                <Controller
+                  name="province_name"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      labelId="province-label"
+                      label="نام استان"
+                      value={selectedProvince}
+                      onChange={handleProvinceChange}
+                    >
+                      {provinces.map((province) => (
+                        <MenuItem key={province.id} value={province.name}>
+                          {province.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </FormControl>
+              <FormControl fullWidth margin="normal" disabled={!selectedProvince}>
+                <InputLabel id="city-label">نام شهر</InputLabel>
+                <Controller
+                  name="city_name"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      labelId="city-label"
+                      label="نام شهر"
+                      value={selectedCity}
+                      onChange={handleCityChange}
+                    >
+                      {cities.map((city) => (
+                        <MenuItem key={city.id} value={city.name}>
+                          {city.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </FormControl>
               {dataInput.map((item) => (
                 <Controller
                   key={item.id}
@@ -259,14 +391,11 @@ function TemplateMobileProfile({ handleOpenDialog, fetchUserAddressesData, fetch
                       fullWidth
                       margin="normal"
                       error={!!errors[item.name]}
-                      helperText={
-                        errors[item.name] ? errors[item.name].message : ""
-                      }
+                      helperText={errors[item.name] ? errors[item.name].message : ""}
                     />
                   )}
                 />
               ))}
-
               <Controller
                 name="additional_notes"
                 control={control}
@@ -290,8 +419,9 @@ function TemplateMobileProfile({ handleOpenDialog, fetchUserAddressesData, fetch
                 type="submit"
                 variant="contained"
                 sx={{ mt: 2 }}
+                disabled={loading} // غیرفعال کردن دکمه در حالت لودینگ
               >
-                ذخیره
+                {loading ? <CircularProgress size={24} /> : isEditingAddress ? "ویرایش آدرس" : "ذخیره آدرس"}
               </Button>
             </form>
             <Grid
@@ -306,7 +436,7 @@ function TemplateMobileProfile({ handleOpenDialog, fetchUserAddressesData, fetch
               {userAdresses?.length > 0 ? (
                 <>
                   {userAdresses.map((item) => (
-                    <AddressCard key={item?._id} {...item} />
+                    <AddressCard key={item?._id} {...item} onEdit={onEdit}/>
                   ))}
                 </>
               ) : (
