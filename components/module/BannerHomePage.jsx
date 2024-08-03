@@ -5,6 +5,7 @@ import { CustomButton } from "../style/CustomButton";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { CustomTextField } from "../style/CustomTextField";
+import { registerNewsletter } from "@/pages/api/newsletter/newsletterApi";
 
 function BannerHomePage({
   width,
@@ -38,17 +39,35 @@ function BannerHomePage({
     reset,
   } = useForm();
 
-  const onSubmit = (data) => {
-    toast.success("فرم با موفقیت ارسال شد!", {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-    reset();
+  const onSubmit = async(data) => {
+    try {
+      const response= await registerNewsletter(data);
+      if (response?.status) {
+        toast.success(response?.detail?.fa, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        reset(); 
+      }
+   
+    } catch (error) {
+      const errorDetail = JSON.parse(error.message);
+      const errorMessage = errorDetail.detail.fa || "خطا در ارسال فرم";
+      toast.error(errorMessage,{
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
   return (
     <Grid
@@ -107,19 +126,19 @@ function BannerHomePage({
             <form onSubmit={handleSubmit(onSubmit)}>
               <Box mb={2}>
                 <CustomTextField
-                  {...register("fullName", {
+                  {...register("full_name", {
                     required: "نام و نام خانوادگی الزامی است",
                   })}
                   placeholder="نام و نام خانوادگی"
                   style={{ width: "100%", padding: "8px", marginBottom: "4px" }}
                 />
-                {errors.fullName && (
+                {errors.full_name && (
                   <Typography
                     color={"red"}
                     fontFamily={"iran-sans"}
                     fontSize={"12px"}
                   >
-                    {errors.fullName.message}
+                    {errors.full_name.message}
                   </Typography>
                 )}
               </Box>
