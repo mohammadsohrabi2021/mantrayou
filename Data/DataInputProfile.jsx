@@ -1,17 +1,17 @@
 export const dataInput = [
   { id: 1, lable: "آدرس", name: "address_text", required: "آدرس الزامی است" },
-  {
-    id: 2,
-    lable: "نام استان",
-    name: "province_name",
-    required: "نام استان الزامی است",
-  },
-  {
-    id: 3,
-    lable: "نام شهر",
-    name: "city_name",
-    required: "نام شهر الزامی است",
-  },
+  // {
+  //   id: 2,
+  //   lable: "نام استان",
+  //   name: "province_name",
+  //   required: "نام استان الزامی است",
+  // },
+  // {
+  //   id: 3,
+  //   lable: "نام شهر",
+  //   name: "city_name",
+  //   required: "نام شهر الزامی است",
+  // },
   {
     id: 4,
     lable: "کد پستی",
