@@ -8,6 +8,7 @@ const initialState = {
   addressesUser: [],
   products: [],
   cart: [],
+  checkout:[],
   selectedVariation: null,
   selectedQuantity: 1,
   selectedProductId: null,
@@ -39,6 +40,9 @@ export const appSlice = createSlice({
     },
     saveCartInfo: (state, action) => {
       state.cart = action.payload;
+    },
+    saveCheckoutInfo:(state, action) => {
+      state.checkout = action.payload;
     },
     addToCart: (state, action) => {
       const { id, variation } = action.payload;
@@ -98,6 +102,7 @@ export const {
   saveAdressesUserInfo: saveAdressesUserInfoMethod,
   saveProductsInfo: saveProductsInfoMethod,
   saveCartInfo: saveCartInfoMethod,
+  saveCheckoutInfo: saveCheckoutInfoMethod,
   addToCart: addToCartMethod,
   removeFromCart: removeFromCartMethod,
   updateCartQuantity: updateCartQuantityMethod,
