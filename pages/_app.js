@@ -4,7 +4,10 @@ import { store } from "../redux/store";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/router";
 export default function App({ Component, pageProps }) {
+  const router = useRouter();
+  const isCheckoutShipping = router.pathname === "/checkout"|| router.pathname === "/checkout/payment";
   return (
     <Provider store={store}>
       <ToastContainer
@@ -20,9 +23,13 @@ export default function App({ Component, pageProps }) {
         style={{ width: "auto", fontSize: "16px" }}
       />
 
-      <Layout>
+      {isCheckoutShipping ? (
         <Component {...pageProps} />
-      </Layout>
+      ) : (
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      )}
     </Provider>
   );
 }
