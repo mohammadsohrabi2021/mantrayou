@@ -12,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { colorVariations } from "@/Data/DataColor"; // Import color variations
 import { showCartAPI, removeProductFromCartAPI, getFreeShippingThreshold, addProductToCartAPI } from "@/pages/api/cart/cartApi";
 import Cookies from "js-cookie";
+import Link from "next/link";
 
 export const CartList = ({ toggleCartDrawer }) => {
   const cart = useSelector((state) => state.app.cart);
@@ -263,9 +264,11 @@ console.log(loadingItems)
             <Typography variant="h6" fontFamily={"iran-sans"} fontWeight="bold" sx={{ mt: 1 }}>
               {totalPrice.toFixed(2)} €
             </Typography>
-            <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+           <Link href={'/checkout'}>
+           <Button   onClick={() => toggleCartDrawer(false)()} variant="contained"  fullWidth sx={{ mt: 2,height:'59px',backgroundColor:'#000',fontFamily:'iran-sans' }}>
               ادامه خرید
             </Button>
+           </Link>
           </Box>
         </>
       )}
