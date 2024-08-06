@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Grid, Typography, Button, Divider, List } from "@mui/material";
 import logoPost from "../../assets/images/logoPost.png";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -8,9 +8,19 @@ import FmdGoodIcon from "@mui/icons-material/FmdGood";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import Image from "next/image";
 import Link from "next/link";
+import AddressModalCheckOut from "./AddressModalCheckOut";
 function CheckoutPageDesctop() {
   const checkout = useSelector((state) => state.app.checkout);
-  console.log(checkout.items?.variation?.color);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <Box
       maxWidth={"85%"}
@@ -214,6 +224,7 @@ function CheckoutPageDesctop() {
               <Button
                 endIcon={<ArrowBackIosNewIcon style={{ fontSize: "10px" }} />}
                 variant="text"
+                onClick={handleOpenModal}
                 sx={{
                   fontFamily: "iran-sans",
                   justifyContent: "flex-end",
@@ -328,6 +339,7 @@ function CheckoutPageDesctop() {
           </Box>
         </Grid>
       </Grid>
+      <AddressModalCheckOut open={modalOpen} onClose={handleCloseModal} />
     </Box>
   );
 }
