@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Button, List, Grid } from "@mui/material";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -9,9 +9,18 @@ import ProductCardCheckOut from "./ProductCardCheckOut";
 import logoPost from "../../assets/images/logoPost.png";
 import Image from "next/image";
 import Link from "next/link";
+import AddressModalCheckOut from "./AddressModalCheckOut";
 function CheckoutPageMobile() {
   const checkout = useSelector((state) => state.app.checkout);
-  console.log(checkout?.items);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
   return (
     <Box position={"relative"} sx={{ pb: "72px" }}>
       <Typography
@@ -81,6 +90,7 @@ function CheckoutPageMobile() {
             fontSize: "12px",
             gap: 1,
           }}
+          onClick={handleOpenModal}
         >
           تغییر یا ویرایش آدرس
         </Button>
@@ -273,6 +283,7 @@ function CheckoutPageMobile() {
           </Typography>
         </Grid>
       </Box>
+      <AddressModalCheckOut open={modalOpen} onClose={handleCloseModal} />
     </Box>
   );
 }
