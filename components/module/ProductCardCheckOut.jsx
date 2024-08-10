@@ -27,6 +27,7 @@ function ProductCardCheckOut({ main_image, name, price, quantity, variation }) {
             ? `https://api.mantrayou.com/images/${main_image}`
             : baseImage
         }
+        alt="imageSite"
       />
       <Box
         display={"flex"}
