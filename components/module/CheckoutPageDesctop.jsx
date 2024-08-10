@@ -12,7 +12,7 @@ import AddressModalCheckOut from "./AddressModalCheckOut";
 function CheckoutPageDesctop() {
   const checkout = useSelector((state) => state.app.checkout);
   const [modalOpen, setModalOpen] = useState(false);
-
+console.log(checkout)
   const handleOpenModal = () => {
     setModalOpen(true);
   };
@@ -95,7 +95,7 @@ function CheckoutPageDesctop() {
                 fontSize={"14px"}
                 lineHeight={2.17}
               >
-                قیمت کالاها
+                قیمت کالاها ({checkout?.items?.length})
               </Typography>
               <Typography
                 fontFamily={"iran-sans"}
@@ -104,7 +104,7 @@ function CheckoutPageDesctop() {
                 lineHeight={2.17}
                 fontWeight={700}
               >
-                ۱۵,۳۲۳,۰۰۰ تومان
+               {checkout?.total_price.toLocaleString()} تومان
               </Typography>
             </Box>
             <Divider sx={{ my: 2 }} />
@@ -132,10 +132,34 @@ function CheckoutPageDesctop() {
                 fontWeight={700}
                 lineHeight={2.17}
               >
-                رایگان
+               {checkout?.shipping_fee?.toLocaleString()} تومان
               </Typography>
             </Box>
             <Divider sx={{ my: 2 }} />
+            <Box
+              display={"flex"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Typography
+                fontFamily={"iran-sans"}
+                color={"red"}
+                fontSize={"12px"}
+                lineHeight={2.17}
+                fontWeight={700}
+              >
+                سود شما از خرید
+              </Typography>
+              <Typography
+                fontFamily={"iran-sans"}
+                color={"#62666d"}
+                fontSize={"14px"}
+                lineHeight={2.17}
+                fontWeight={700}
+              >
+                {checkout?.offset_profit?.toLocaleString()} تومان
+              </Typography>
+            </Box>
             <Box
               display={"flex"}
               justifyContent={"space-between"}
@@ -157,7 +181,7 @@ function CheckoutPageDesctop() {
                 lineHeight={2.17}
                 fontWeight={700}
               >
-                ۱۵,۳۲۳,۰۰۰ تومان
+               {checkout?.total_price_wd?.toLocaleString()} تومان
               </Typography>
             </Box>
             <Link href={"/checkout/payment"}>
@@ -238,21 +262,7 @@ function CheckoutPageDesctop() {
             </Box>
           </Box>
 
-          {/* <Box mb={2}>
-            <Button
-              variant="outlined"
-              color="inherit"
-              fullWidth
-              endIcon={<ArrowForwardIosIcon />}
-              sx={{
-                justifyContent: "space-between",
-                py: 1.5,
-                fontFamily: "iran-sans",
-              }}
-            >
-              آدرس و زمان ارسال
-            </Button>
-          </Box> */}
+        
 
           <Box border={"1px solid #e0e0e2"} borderRadius={"8px"} p={4}>
             <Box display={"flex"} alignItems={"center"} gap={2} mb={1}>
@@ -333,7 +343,7 @@ function CheckoutPageDesctop() {
                 lineHeight={2.15}
                 fontSize={"14px"}
               >
-                رایگان
+                 {checkout?.shipping_fee?.toLocaleString()} تومان
               </Typography>
             </Box>
           </Box>
