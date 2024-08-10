@@ -28,3 +28,75 @@ export const selectUserAddress = async (addressId, token) => {
   return await response.json();
 };
 
+// pages/api/checkout/checkoutApi.js
+export const getPaymentMethods = async () => {
+  try {
+    const response = await fetch('https://api.mantrayou.com/client/cart/payment_method');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching payment methods:', error);
+    throw error;
+  }
+};
+
+export const selectPaymentMethod = async (token, methodId) => {
+  try {
+    const response = await fetch(`https://api.mantrayou.com/client/cart/payment/${methodId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error selecting payment method:', error);
+    throw error;
+  }
+};
+// api/api.js
+
+export const applyCouponCode = async (token, couponCode) => {
+  console.log(token, couponCode)
+  const url = `https://api.mantrayou.com/client/cart/add_coupon/${couponCode}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail.fa || 'خطای نامشخصی رخ داده است');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error applying coupon:', error);
+    throw error;
+  }
+};
+export const getShippingMethods = async (token, dataUser) => {
+  const res = await fetch('https://api.mantrayou.com/client/cart/shipping_method', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  const resData = await res.json();
+  return resData;
+};
