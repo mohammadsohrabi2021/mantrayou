@@ -81,8 +81,11 @@ function FooterLayout() {
           ))}
         </Grid>
         <Grid display={'flex'} xs={12}sm={6} md={12} gap={4} justifyContent={{xs:'space-around',md:'center'}}>
-         <Image src={logo} style={{width:'100px',height:'130px'}}/>
-         <Image src={logoZarin} style={{width:'100px',height:'130px'}}/>
+         {/* <Image src={logo} style={{width:'100px',height:'130px'}} alt="logo"/>
+         <Image src={logoZarin} style={{width:'100px',height:'130px'}}alt="logoZarin"/> */}
+          <a referrerPolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=513457&Code=Et896oKZhvgSn8xqBDytW9dQZQaBPybD'>
+              <img referrerPolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=513457&Code=Et896oKZhvgSn8xqBDytW9dQZQaBPybD' alt='ای‌نماد' style={{ cursor: 'pointer', width: '100px', height: '130px' }} />
+            </a>
         </Grid>
       </Grid>
     </Box>
