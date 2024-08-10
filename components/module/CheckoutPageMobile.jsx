@@ -32,21 +32,22 @@ function CheckoutPageMobile() {
       >
         فروشگاه آنلاین مانترا
       </Typography>
-      <Button
-        variant="text"
-        startIcon={<ArrowForwardIcon />}
-        sx={{
-          color: "black",
-          width: "max-content",
-          textTransform: "none",
-          fontFamily: "iran-sans",
-          fontWeight: 700,
-          gap: 1,
-          fontSize: "12px",
-        }}
-      >
-        آدرس و زمان ارسال
-      </Button>
+      <Link href={"/"}>
+          <Button
+            variant="text"
+            startIcon={<ArrowForwardIcon />}
+            sx={{
+              color: "black",
+              width: "max-content",
+              textTransform: "none",
+              fontFamily: "iran-sans",
+              fontWeight: "bold",
+              gap: 1,
+            }}
+          >
+            آدرس و زمان ارسال
+          </Button>
+        </Link>
       <Box sx={{ my: 1, height: "8px", bgcolor: "#f0f0f1" }} />
       <Box display={"flex"} flexDirection={"column"} px={3} py={2}>
         <Box display={"flex"} alignItems={"center"} gap={1}>
@@ -279,7 +280,7 @@ function CheckoutPageMobile() {
             fontSize={"12px"}
           >
             {" "}
-            ۱۵,۲۲۳,۰۰۰ تومان
+            {checkout?.overall_basket_price?.toLocaleString()} تومان
           </Typography>
         </Grid>
       </Box>
