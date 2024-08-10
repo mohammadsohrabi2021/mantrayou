@@ -82,7 +82,7 @@ function BannerHomePage({
       overflow="hidden"
     >
       {matches ? (
-        <Image src={image} style={{ width: "100%", height: "100%" }} />
+        <Image src={image} style={{ width: "100%", height: "100%" }} alt="image"/>
       ) : (
         <Image
           src={image}
@@ -90,6 +90,7 @@ function BannerHomePage({
             width: title === "معاملات خبرنامه" ? "50%" : "70%",
             height: "100%",
           }}
+          alt="image"
         />
       )}
 
