@@ -90,7 +90,7 @@ function HomePage({initialProducts}) {
           </Grid>
         );
       })}
-    <Grid className="box-shadow" p={2} borderRadius={3}>
+    {/* <Grid className="box-shadow" p={2} borderRadius={3}>
       <Grid display={"flex"} flexDirection={"column"} alignItems={"center"}>
         <Typography
           lineHeight={3}
@@ -137,7 +137,7 @@ function HomePage({initialProducts}) {
           </Grid>
         ))}
       </Grid>
-    </Grid>
+    </Grid> */}
     <Typography
       className="box-shadow"
       borderRadius={3}
