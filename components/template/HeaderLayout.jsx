@@ -19,7 +19,7 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MenuSharpIcon from "@mui/icons-material/MenuSharp";
 import SearchIcon from "@mui/icons-material/Search";
 import dataMune from "@/Data/DataMune";
-import logoSite from "../../assets/images/logoSite.png";
+import logoSite from "../../assets/images/mantra.png";
 import Image from "next/image";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import {
@@ -34,6 +34,7 @@ import {
   saveActiveItemInfoMethod,
   saveMuneListCategoriesMethod,
   setCartDrawerOpen,
+  setDrawerOpen
 } from "@/redux/appSlice";
 import { CartList } from "../module/CartList";
 import { MuneList } from "../module/MuneList";
@@ -44,6 +45,7 @@ import AutoCompleteSearch from "../module/AutoCompleteSearch";
 function HeaderLayout() {
   const [mounted, setMounted] = useState(false);
   const cartDrawerOpen = useSelector((state) => state.app.isCartDrawerOpen);
+  const drawerOpen = useSelector((state) => state.app.isDrawerOpen);
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.app.cart);
   const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -54,7 +56,7 @@ function HeaderLayout() {
 
   const [showMuneAccount, setShowMuneAccount] = useState(null);
   const open = Boolean(showMuneAccount);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  // const [drawerOpen, setDrawerOpen] = useState(false);
   // const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [subCategories, setSubCategories] = useState([]);
@@ -81,7 +83,7 @@ function HeaderLayout() {
   };
 
   const toggleDrawer = (open) => () => {
-    dispatch(setCartDrawerOpen(open));
+    dispatch(setDrawerOpen(open));
   };
 
   const toggleCartDrawer = (open) => () => {
@@ -148,7 +150,7 @@ function HeaderLayout() {
           <Image
             src={logoSite}
             alt="لوگو سایت "
-            style={{ width: "80px", height: "80px" }}
+            style={{ width: "120px", height: "80px" }}
           />
         </Grid>
         <Search
