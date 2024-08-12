@@ -26,6 +26,7 @@ import Link from "next/link";
 import AddressModalCheckOut from "./AddressModalCheckOut";
 import {
   applyCouponCode,
+  deleteCoupon,
   getDataCheckOutUser,
   getPaymentMethods,
   getShippingMethods,
@@ -37,6 +38,8 @@ import { toast } from "react-toastify";
 import Loader from "../icons/Loader";
 import { saveCheckoutInfoMethod } from "@/redux/appSlice";
 import { fetchData } from "@/utils/fetchDataCheckOut";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 function CheckoutPaymentPageMobile() {
   const dispatch = useDispatch();
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -49,7 +52,13 @@ function CheckoutPaymentPageMobile() {
   const checkout = useSelector((state) => state.app.checkout);
   const [shippingMethods, setShippingMethods] = useState([]);
   const token = Cookies.get("token");
-
+  useEffect(() => {
+    // تنظیم مقدار پیش‌فرض برای روش پرداخت و روش ارسال
+    if (checkout) {
+      setSelectedMethod(checkout.payment_method?._id || "");
+      setSelectedShippingMethod(checkout.shipping_method?._id || "");
+    }
+  }, [checkout]);
   useEffect(() => {
     const fetchMethods = async () => {
       try {
@@ -85,7 +94,7 @@ function CheckoutPaymentPageMobile() {
   const handleSelectShippingMethod = async (methodId) => {
     setSelectedShippingMethod(methodId);
     try {
-      await updateShippingMethod(methodId,token);
+      await updateShippingMethod(methodId, token);
       fetchData(dispatch, setLoading);
     } catch (error) {
       console.error("Error selecting payment method:", error);
@@ -97,7 +106,9 @@ function CheckoutPaymentPageMobile() {
 
   const handleCouponCodeChange = (event) => {
     setCouponCode(event.target.value);
-    setResponseMessage(""); // پاک کردن پیام پاسخ در صورت تغییر ورودی
+    if (responseMessage) {
+      setResponseMessage(""); // پاک کردن پیام پاسخ در صورت وجود پیام
+    }
   };
 
   const handleApplyCoupon = async () => {
@@ -114,6 +125,19 @@ function CheckoutPaymentPageMobile() {
     } catch (error) {
       setResponseMessage(`خطا در اعمال کد تخفیف: ${error.message}`);
       console.error("Error applying coupon:", error);
+    }
+    setLoading(false); // پایان لودینگ
+  };
+  const handleDeleteCoupon = async () => {
+    setLoading(true); // شروع لودینگ
+    try {
+      await deleteCoupon(token); // فراخوانی تابع حذف کوپن
+      setCouponCode(""); // پاک کردن کد تخفیف
+      setResponseMessage("کوپن تخفیف با موفقیت حذف شد");
+      fetchData(dispatch, setLoading); // به‌روزرسانی داده‌های صفحه پس از حذف کوپن
+    } catch (error) {
+      setResponseMessage(`خطا در حذف کوپن تخفیف: ${error.message}`);
+      console.error("Error deleting coupon:", error);
     }
     setLoading(false); // پایان لودینگ
   };
@@ -332,6 +356,13 @@ function CheckoutPaymentPageMobile() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
+                  {(couponCode ||
+                    checkout?.coupon_targets?.products?.length > 0 ||
+                    checkout?.coupon_targets?.categories?.length > 0) && (
+                    <IconButton onClick={handleDeleteCoupon} disabled={loading}>
+                      {loading ? <Loader /> : <DeleteIcon />}
+                    </IconButton>
+                  )}
                   <Button
                     // variant="contained"
                     sx={{
