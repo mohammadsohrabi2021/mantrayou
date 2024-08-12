@@ -25,12 +25,13 @@ import {
   applyCouponCode,
   getShippingMethods,
   updateShippingMethod,
+  deleteCoupon,
 } from "@/pages/api/checkout/checkoutApi";
 import { toast } from "react-toastify";
 import Loader from "../icons/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchData } from "@/utils/fetchDataCheckOut";
-
+import DeleteIcon from "@mui/icons-material/Delete";
 function CheckoutPaymentPageDesktop() {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedMethod, setSelectedMethod] = useState("");
@@ -39,10 +40,19 @@ function CheckoutPaymentPageDesktop() {
   const [responseMessage, setResponseMessage] = useState(""); // پیام پاسخ
   const [loading, setLoading] = useState(false); // وضعیت لودینگ
   const checkout = useSelector((state) => state.app.checkout);
+  console.log(checkout)
   const token = Cookies.get("token");
   const [shippingMethods, setShippingMethods] = useState([]);
   const [selectedShippingMethod, setSelectedShippingMethod] = useState("");
   const dispatch = useDispatch();
+  useEffect(() => {
+    // تنظیم مقدار پیش‌فرض برای روش پرداخت و روش ارسال
+    if (checkout) {
+      setSelectedMethod(checkout.payment_method?._id || "");
+      setSelectedShippingMethod(checkout.shipping_method?._id || "");
+    }
+  }, [checkout]);
+
   useEffect(() => {
     const fetchMethods = async () => {
       try {
@@ -63,7 +73,7 @@ function CheckoutPaymentPageDesktop() {
     };
 
     fetchMethods();
-    fetchShippingMethods()
+    fetchShippingMethods();
   }, []);
 
   const handleSelectMethod = async (methodId) => {
@@ -78,9 +88,9 @@ function CheckoutPaymentPageDesktop() {
 
   const handleSelectShippingMethod = async (methodId) => {
     setSelectedShippingMethod(methodId);
-    
+
     try {
-      await updateShippingMethod(methodId,token);
+      await updateShippingMethod(methodId, token);
       fetchData(dispatch, setLoading);
     } catch (error) {
       console.error("Error selecting payment method:", error);
@@ -93,7 +103,9 @@ function CheckoutPaymentPageDesktop() {
 
   const handleCouponCodeChange = (event) => {
     setCouponCode(event.target.value);
-    setResponseMessage(""); // پاک کردن پیام پاسخ در صورت تغییر ورودی
+    if (responseMessage) {
+      setResponseMessage(""); // پاک کردن پیام پاسخ در صورت وجود پیام
+    }
   };
 
   const handleApplyCoupon = async () => {
@@ -105,14 +117,26 @@ function CheckoutPaymentPageDesktop() {
     try {
       const data = await applyCouponCode(token, couponCode);
       setResponseMessage(data?.detail?.fa);
-      console.log("Coupon applied successfully:", data);
+      fetchData(dispatch, setLoading);
     } catch (error) {
       setResponseMessage(`خطا در اعمال کد تخفیف: ${error.message}`);
       console.error("Error applying coupon:", error);
     }
     setLoading(false); // پایان لودینگ
   };
-
+  const handleDeleteCoupon = async () => {
+    setLoading(true); // شروع لودینگ
+    try {
+      await deleteCoupon(token); // فراخوانی تابع حذف کوپن
+      setCouponCode(""); // پاک کردن کد تخفیف
+      setResponseMessage("کوپن تخفیف با موفقیت حذف شد");
+      fetchData(dispatch, setLoading); // به‌روزرسانی داده‌های صفحه پس از حذف کوپن
+    } catch (error) {
+      setResponseMessage(`خطا در حذف کوپن تخفیف: ${error.message}`);
+      console.error("Error deleting coupon:", error);
+    }
+    setLoading(false); // پایان لودینگ
+  };
   return (
     <Box
       maxWidth={"85%"}
@@ -236,57 +260,57 @@ function CheckoutPaymentPageDesktop() {
           >
             {/* <Box display={"flex"} flexDirection={"column"}>
               <Box> */}
-                <Typography
-                    variant="h6"
-                    sx={{
-                      fontFamily: "iran-sans",
-                      fontWeight: "bold",
-                      marginBottom: "18px",
-                    }}
-                >
-                  انتخاب روش ارسال
-                </Typography>
-                <RadioGroup
-  value={selectedShippingMethod}
-  onChange={(e) => handleSelectShippingMethod(e.target.value)}
->
-  {shippingMethods.map((method) => (
-    <Box key={method._id}>
-      <FormControlLabel
-        value={method._id}
-        control={<Radio />}
-        label={
-          <Box display="flex" alignItems="center" gap={1}>
             <Typography
-              variant="body1"
-              sx={{ fontFamily: "iran-sans", fontWeight: "bold" }}
+              variant="h6"
+              sx={{
+                fontFamily: "iran-sans",
+                fontWeight: "bold",
+                marginBottom: "18px",
+              }}
             >
-              {method.name}
+              انتخاب روش ارسال
             </Typography>
-            {method.price > 0 && (
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontFamily: "iran-sans" }}
-              >
-                {method.price?.toLocaleString()} تومان
-              </Typography>
-            )}
-          </Box>
-        }
-        sx={{
-          borderBottom: "1px solid #ddd",
-          cursor: "pointer",
-          width: "100%",
-          margin: 0,
-          padding: "10px 0",
-        }}
-      />
-    </Box>
-  ))}
-</RadioGroup>
+            <RadioGroup
+              value={selectedShippingMethod}
+              onChange={(e) => handleSelectShippingMethod(e.target.value)}
+            >
+              {shippingMethods.map((method) => (
+                <Box key={method._id}>
+                  <FormControlLabel
+                    value={method._id}
+                    control={<Radio />}
+                    label={
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Typography
+                          variant="body1"
+                          sx={{ fontFamily: "iran-sans", fontWeight: "bold" }}
+                        >
+                          {method.name}
+                        </Typography>
+                        {method.price > 0 && (
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ fontFamily: "iran-sans" }}
+                          >
+                            {method.price?.toLocaleString()} تومان
+                          </Typography>
+                        )}
+                      </Box>
+                    }
+                    sx={{
+                      borderBottom: "1px solid #ddd",
+                      cursor: "pointer",
+                      width: "100%",
+                      margin: 0,
+                      padding: "10px 0",
+                    }}
+                  />
+                </Box>
+              ))}
+            </RadioGroup>
 
-              {/* </Box>
+            {/* </Box>
             </Box> */}
           </Box>
           <Box
@@ -355,6 +379,13 @@ function CheckoutPaymentPageDesktop() {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
+                        {(couponCode ||
+                    checkout?.coupon_targets?.products?.length > 0 ||
+                    checkout?.coupon_targets?.categories?.length > 0) && (
+                    <IconButton onClick={handleDeleteCoupon} disabled={loading}>
+                      {loading ? <Loader /> : <DeleteIcon  sx={{color:'red'}}/>}
+                    </IconButton>
+                  )}
                       <Button
                         // variant="contained"
                         sx={{
