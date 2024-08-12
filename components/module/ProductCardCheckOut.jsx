@@ -13,7 +13,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import baseImage from "../../assets/images/logoSite.png";
+import baseImage from "../../assets/images/mantra.png";
 import Image from "next/image";
 import { colorVariations } from "@/Data/DataColor";
 function ProductCardCheckOut({ main_image, name, price, quantity, variation }) {
