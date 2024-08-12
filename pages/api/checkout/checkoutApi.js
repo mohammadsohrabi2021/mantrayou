@@ -89,6 +89,33 @@ export const applyCouponCode = async (token, couponCode) => {
     throw error;
   }
 };
+export const updateShippingMethod = async (shippingMethodId,token) => {
+
+  try {
+    const response = await fetch(
+      `https://api.mantrayou.com/client/cart/shipping_method/${shippingMethodId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}), // در صورت نیاز به ارسال داده اضافی، اینجا آن‌ها را اضافه کنید
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update shipping method");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating shipping method:", error);
+    throw error;
+  }
+};
+
 export const getShippingMethods = async (token, dataUser) => {
   const res = await fetch('https://api.mantrayou.com/client/cart/shipping_method', {
     method: 'GET',
