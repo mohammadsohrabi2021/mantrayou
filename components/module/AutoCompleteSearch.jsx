@@ -13,7 +13,7 @@ import {
   CardContent,
   Skeleton
 } from "@mui/material";
-import baseImage from '../../assets/images/logoSite.png';
+import baseImage from '../../assets/images/mantra.png';
 import SearchIcon from "@mui/icons-material/Search";
 
 import { autoCompleteSearchAPI } from "@/pages/api/cart/cartApi";
