@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from "@mui/system";
-import baseImage from '../../assets/images/logoSite.png';
+import baseImage from '../../assets/images/mantra.png';
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import AddIcon from "@mui/icons-material/Add";
@@ -22,6 +22,7 @@ import VariationModal from './VariationModal';
 import { handleAddToCart, handleUpdateQuantity, handleRemoveItem } from "@/utils/cartUtils";
 import { setSelectedProductIdMethod, resetVariationSelectionMethod, setCartDrawerOpen } from "@/redux/appSlice"; // Import the necessary methods
 import Loader from "../icons/Loader";
+import { useRouter } from "next/router";
 
 const StyledCard = styled(Card)`
   position: relative;
@@ -32,6 +33,10 @@ const StyledCard = styled(Card)`
 
 const StyledCardMedia = styled(CardMedia)`
   height: 300px;
+  width: ${(props) => props.router?.pathname === "/products/[...productId]"&& "300px"};
+  object-fit: contain;
+    /* object-fit: cover; */
+   /* background-color: lightGray; */
   transition: transform 0.5s ease;
   &:hover {
     transform: scale(1.1);
@@ -81,7 +86,18 @@ const ProductCard = ({
   const selectedQuantity = useSelector((state) => state.app.selectedQuantity);
   const [loading, setLoading] = useState(false);
   const [loadingQuantity, setLoadingQuantity] = useState(false);
-
+const router =useRouter()
+const StyledCardMedia = styled(CardMedia)`
+  height: 300px;
+  width: ${router?.pathname === "/products/[...productId]"&& "300px"};
+  object-fit: contain;
+    /* object-fit: cover; */
+   /* background-color: lightGray; */
+  transition: transform 0.5s ease;
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
   useEffect(() => {
     setMounted(true);
   }, []);
