@@ -3,7 +3,7 @@ import React from 'react'
 
 function BannerLoginPage({title,discription}) {
     const backGroundImageBanner = {
-        backgroundImage: `url('/assets/image/bannerLogin.webp')`,
+        // backgroundImage: `url('/assets/image/bannerLogin.webp')`,
         backgroundPosition: "center",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
