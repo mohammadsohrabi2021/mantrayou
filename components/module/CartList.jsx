@@ -264,11 +264,16 @@ console.log(loadingItems)
             <Typography variant="h6" fontFamily={"iran-sans"} fontWeight="bold" sx={{ mt: 1 }}>
               {totalPrice.toFixed(2)} €
             </Typography>
-           <Link href={'/checkout'}>
-           <Button   onClick={() => toggleCartDrawer(false)()} variant="contained"  fullWidth sx={{ mt: 2,height:'59px',backgroundColor:'#000',fontFamily:'iran-sans' }}>
+            {cart.length === 0 ? 
+           <Button   onClick={() => toggleCartDrawer(false)()} variant="contained"  fullWidth sx={{ mt: 2,height:'59px',backgroundColor:'#000',fontFamily:'iran-sans' }} disabled={cart.length === 0 }>
               ادامه خرید
             </Button>
-           </Link>
+         :
+           <Link href={'/checkout'}>
+           <Button   onClick={() => toggleCartDrawer(false)()} variant="contained"  fullWidth sx={{ mt: 2,height:'59px',backgroundColor:'#000',fontFamily:'iran-sans' }} disabled={cart.length === 0 }>
+              ادامه خرید
+            </Button>
+           </Link>}
           </Box>
         </>
       )}
