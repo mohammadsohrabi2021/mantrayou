@@ -7,7 +7,7 @@ import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import TelegramIcon from '@mui/icons-material/Telegram';
 // import TikTokIcon from '@mui/icons-material/TikTok';
 // import { ReactComponent as WhatsAppIcon } from './icons/whatsapp.svg';  // فرض بر این است که آیکون واتساپ به صورت SVG در پروژه موجود است
-import logoSite from "../../assets/images/logoSite.png";
+import logoSite from "../../assets/images/mantra.png";
 import logo from "../../assets/images/logo.png";
 import logoZarin from "../../assets/images/zarin.png";
 import { dataFooter } from "@/Data/DataFooter";
