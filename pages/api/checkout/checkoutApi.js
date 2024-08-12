@@ -127,3 +127,28 @@ export const getShippingMethods = async (token, dataUser) => {
   const resData = await res.json();
   return resData;
 };
+
+
+export const deleteCoupon = async (token) => {
+
+  try {
+    const response = await fetch("https://api.mantrayou.com/client/cart/delete_coupon", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete coupon");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error deleting coupon:", error);
+    throw error;
+  }
+};
+
