@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateCartQuantityMethod, removeFromCartMethod, setCartItems, saveCartInfoMethod } from "@/redux/appSlice";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import baseImage from '../../assets/images/logoSite.png';
+import baseImage from '../../assets/images/mantra.png';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { colorVariations } from "@/Data/DataColor"; // Import color variations
 import { showCartAPI, removeProductFromCartAPI, getFreeShippingThreshold, addProductToCartAPI } from "@/pages/api/cart/cartApi";
