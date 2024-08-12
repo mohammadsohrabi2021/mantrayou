@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Divider, Grid, IconButton, List, ListItemText } from "@mui/material";
 import Image from "next/image";
 import { ListItemStyled } from "../style/HeaderLayout";
-import logoSite from "../../assets/images/logoSite.png";
+import logoSite from "../../assets/images/mantra.png";
 import CloseIcon from "@mui/icons-material/Close";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import PersonIcon from "@mui/icons-material/Person";
@@ -48,7 +48,7 @@ export const MuneList = ({ toggleDrawer, activeItem }) => {
           <Image
             src={logoSite}
             alt="لوگو سایت"
-            style={{ width: "80px", height: "80px" }}
+            style={{ width: "140px", height: "80px" }}
           />
         </Grid>
         <Grid item>
