@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import baseImage from "../../assets/images/logoSite.png";
+import baseImage from "../../assets/images/mantra.png";
 import ColorSelector from "./ColorSelector"; // Import the ColorSelector component
 import "react-toastify/dist/ReactToastify.css";
 import AddIcon from "@mui/icons-material/Add";
