@@ -30,6 +30,7 @@ import {
   getPaymentMethods,
   getShippingMethods,
   selectPaymentMethod,
+  updateShippingMethod,
 } from "@/pages/api/checkout/checkoutApi";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
@@ -84,7 +85,7 @@ function CheckoutPaymentPageMobile() {
   const handleSelectShippingMethod = async (methodId) => {
     setSelectedShippingMethod(methodId);
     try {
-      await getShippingMethods(token, methodId);
+      await updateShippingMethod(methodId,token);
       fetchData(dispatch, setLoading);
     } catch (error) {
       console.error("Error selecting payment method:", error);
