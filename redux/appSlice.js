@@ -14,6 +14,7 @@ const initialState = {
   selectedProductId: null,
   stock: {}, // اضافه کردن استیت stock
   isCartDrawerOpen: false,
+  isDrawerOpen: false,
 };
 
 export const appSlice = createSlice({
@@ -91,6 +92,9 @@ export const appSlice = createSlice({
     setCartDrawerOpen: (state, action) => {
       state.isCartDrawerOpen = action.payload;
     },
+    setDrawerOpen: (state, action) => {
+      state.isDrawerOpen = action.payload;
+    },
   },
 });
 
@@ -113,6 +117,7 @@ export const {
   setStock, // اکسپورت اکشن‌های مربوط به stock
   updateStock, // اکسپورت اکشن‌های مربوط به stock
   setCartDrawerOpen,
+  setDrawerOpen
 } = appSlice.actions;
 
 export default appSlice.reducer;
