@@ -13,6 +13,7 @@ import { colorVariations } from "@/Data/DataColor"; // Import color variations
 import { showCartAPI, removeProductFromCartAPI, getFreeShippingThreshold, addProductToCartAPI } from "@/pages/api/cart/cartApi";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import SuggestedProducts from "./SuggestedProducts";
 
 export const CartList = ({ toggleCartDrawer }) => {
   const cart = useSelector((state) => state.app.cart);
@@ -251,6 +252,7 @@ console.log(loadingItems)
                   </Button>
                 </Box>
               ))}
+                    <SuggestedProducts/>
             </Box>
           )}
           <Divider />
@@ -277,6 +279,7 @@ console.log(loadingItems)
           </Box>
         </>
       )}
+
     </Box>
   );
 };
