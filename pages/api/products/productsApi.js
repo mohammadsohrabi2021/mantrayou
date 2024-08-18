@@ -76,15 +76,27 @@ export const getProduct = async (id) => {
     }
   };
   export const fetchRecommendedProducts = async (productId) => {
+    console.log(productId);
     try {
-      const response = await fetch(`https://api.mantrayou.com/client/products/similar?result_count=4`,{
+      let productIds;
+      
+      if (Array.isArray(productId)) {
+        // اگر productId یک آرایه باشد
+        productIds = productId;
+      } else {
+        // اگر productId یک مقدار تکی باشد
+        productIds = [productId];
+      }
+  
+      const response = await fetch(`https://api.mantrayou.com/client/products/similar?result_count=4`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",  // تنظیم Content-Type
+          "Content-Type": "application/json",
           // Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ "product_ids": [productId] })  
+        body: JSON.stringify({ "product_ids": productIds })  // ارسال productIds
       });
+  
       const data = await response.json();
       return data;
     } catch (error) {
@@ -92,4 +104,5 @@ export const getProduct = async (id) => {
       return [];
     }
   };
+  
   
