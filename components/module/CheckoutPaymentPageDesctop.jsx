@@ -32,6 +32,7 @@ import Loader from "../icons/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchData } from "@/utils/fetchDataCheckOut";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { generatePaymentLink } from "@/pages/api/payment/paymentApi";
 function CheckoutPaymentPageDesktop() {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedMethod, setSelectedMethod] = useState("");
@@ -40,7 +41,7 @@ function CheckoutPaymentPageDesktop() {
   const [responseMessage, setResponseMessage] = useState(""); // پیام پاسخ
   const [loading, setLoading] = useState(false); // وضعیت لودینگ
   const checkout = useSelector((state) => state.app.checkout);
-  console.log(checkout)
+  const [paymentLink, setPaymentLink] = useState("");
   const token = Cookies.get("token");
   const [shippingMethods, setShippingMethods] = useState([]);
   const [selectedShippingMethod, setSelectedShippingMethod] = useState("");
@@ -71,7 +72,23 @@ function CheckoutPaymentPageDesktop() {
         console.error("Error fetching shipping methods:", error);
       }
     };
+    const fetchPaymentLink = async () => {
+      try {
+        const data = await generatePaymentLink(token);
+    
+        if (data) {
+          setPaymentLink(data);
+        } else {
+          throw new Error('No payment link in response');
+        }
+      } catch (error) {
+        console.error("Error generating payment link:", error);
+        toast.error("خطا در دریافت لینک پرداخت");
+      }
+    };
+    
 
+    fetchPaymentLink();
     fetchMethods();
     fetchShippingMethods();
   }, []);
@@ -137,6 +154,7 @@ function CheckoutPaymentPageDesktop() {
     }
     setLoading(false); // پایان لودینگ
   };
+
   return (
     <Box
       maxWidth={"85%"}
@@ -558,6 +576,8 @@ function CheckoutPaymentPageDesktop() {
                 fontFamily: "iran-sans",
                 fontWeight: "bold",
               }}
+              href={paymentLink} // لینک پرداخت را به دکمه پرداخت متصل کنید
+              disabled={!paymentLink || loading} 
             >
               پرداخت
             </Button>
