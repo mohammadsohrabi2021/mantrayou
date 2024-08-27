@@ -200,7 +200,7 @@ function HeaderLayout() {
               onMouseEnter={(event) => handleMouseEnter(event, item)}
               onClick={() => dispatch(saveActiveItemInfoMethod(item.id))}
             >
-              <Link href={item.href}> {item.title}</Link>
+          <Link href={item.id !== 3 ? item.href : '#'}>{item.title}</Link>
               {item.id === 3 && (
                 <Popover
                   open={Boolean(anchorEl)}
@@ -208,11 +208,11 @@ function HeaderLayout() {
                   onClose={handleCategoryMouseLeave}
                   anchorOrigin={{
                     vertical: "bottom",
-                    horizontal: "left",
+                    horizontal: "right",
                   }}
                   transformOrigin={{
                     vertical: "top",
-                    horizontal: "left",
+                    horizontal: "right",
                   }}
                   PaperProps={{
                     onMouseLeave: handleCategoryMouseLeave,
@@ -231,19 +231,22 @@ function HeaderLayout() {
                     }}
                   >
                     {muneListCategories.map((category) => (
+                      <Link  href={`/productsCategorization/${category.id}`}style={{ width: '100%', color: 'inherit', textDecoration: 'none' }}>
                       <ListItem
                         button
                         key={category.id}
                         onMouseEnter={(event) =>
                           handleCategoryHover(event, category)
                         }
+                   
                       >
-                        <ListItemText primary={category.name} />
+                        <ListItemText      sx={{textAlign:'right'}} primary={category.name} />
                         {category.childs?.length > 0 && <ArrowDropDownIcon />}
                       </ListItem>
+                      </Link>
                     ))}
                   </List>
-                  {subCategories?.length > 0 && (
+                  {/* {subCategories?.length > 0 && (
                     <Popover
                       anchorEl={subAnchorEl}
                       open={Boolean(subAnchorEl)}
@@ -278,7 +281,7 @@ function HeaderLayout() {
                         ))}
                       </List>
                     </Popover>
-                  )}
+                  )} */}
                 </Popover>
               )}
             </MenuItem>
