@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 export default function App({ Component, pageProps }) {
   const router = useRouter();
-  const isCheckoutShipping = router.pathname === "/checkout"|| router.pathname === "/checkout/payment";
+  const isCheckoutShipping = router.pathname === "/checkout"|| router.pathname === "/checkout/payment"|| router.pathname === "/payment/results/failure"|| router.pathname === "/payment/results/success";
   return (
     <Provider store={store}>
       <ToastContainer
