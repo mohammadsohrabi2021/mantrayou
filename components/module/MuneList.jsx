@@ -31,6 +31,12 @@ export const MuneList = ({ toggleDrawer, activeItem }) => {
     }
   };
 
+  const handleCategoryClick = (categoryId) => {
+    // بستن سایدبار
+    toggleDrawer(false)();
+    // ذخیره اطلاعات آیتم انتخاب شده (در صورت نیاز)
+    dispatch(saveActiveItemInfoMethod(categoryId));
+  };
   return (
     <Box
       role="presentation"
@@ -74,7 +80,7 @@ export const MuneList = ({ toggleDrawer, activeItem }) => {
             }}
           
           >
-            <Link href={item.href} >
+            <Link href={item.id !== 3 ? item.href : '#'} >
               <ListItemText
                 primary={item.title}
                 sx={{ fontFamily: "iran-sans", fontWeight: "bold" }}
@@ -94,20 +100,24 @@ export const MuneList = ({ toggleDrawer, activeItem }) => {
                 defaultExpandIcon={<ChevronRightIcon />}
               >
                 {muneListCategories.map((category) => (
+                    <Link  href={`/productsCategorization/${category.id}`}style={{ width: '100%', color: 'inherit', textDecoration: 'none' }}>
                   <TreeItem
                   itemId={category.id}
                   label={category.name}
                   key={category.id}
+                  onClick={() => handleCategoryClick(category.id)}
                   >
-                    {category.childs &&
+                    
+                    {/* {category.childs &&
                       category.childs.map((subCategory) => (
                         <TreeItem
                         itemId={subCategory.id}
                           label={subCategory.name}
                           key={subCategory.id}
                         />
-                      ))}
+                      ))} */}
                   </TreeItem>
+                  </Link>
                 ))}
               </SimpleTreeView>
             )}
