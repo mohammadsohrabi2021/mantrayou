@@ -39,6 +39,7 @@ import Loader from "../icons/Loader";
 import { saveCheckoutInfoMethod } from "@/redux/appSlice";
 import { fetchData } from "@/utils/fetchDataCheckOut";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { generatePaymentLink } from "@/pages/api/payment/paymentApi";
 
 function CheckoutPaymentPageMobile() {
   const dispatch = useDispatch();
@@ -51,6 +52,7 @@ function CheckoutPaymentPageMobile() {
   const [selectedShippingMethod, setSelectedShippingMethod] = useState("");
   const checkout = useSelector((state) => state.app.checkout);
   const [shippingMethods, setShippingMethods] = useState([]);
+  const [paymentLink, setPaymentLink] = useState("");
   const token = Cookies.get("token");
   useEffect(() => {
     // تنظیم مقدار پیش‌فرض برای روش پرداخت و روش ارسال
@@ -77,7 +79,23 @@ function CheckoutPaymentPageMobile() {
         console.error("Error fetching shipping methods:", error);
       }
     };
+    const fetchPaymentLink = async () => {
+      try {
+        const data = await generatePaymentLink(token);
+    
+        if (data) {
+          setPaymentLink(data);
+        } else {
+          throw new Error('No payment link in response');
+        }
+      } catch (error) {
+        console.error("Error generating payment link:", error);
+        toast.error("خطا در دریافت لینک پرداخت");
+      }
+    };
+    
 
+    fetchPaymentLink();
     fetchMethods();
     fetchShippingMethods();
   }, []);
@@ -518,14 +536,16 @@ function CheckoutPaymentPageMobile() {
           "0 -1px 1px rgba(0, 0, 0, .14), 0 -2px 2px rgba(0, 0, 0, .05"
         }
       >
-        <Link href={"/checkout/payment"}>
+        {/* <Link href={"/checkout/payment"}> */}
           <Button
             variant="contained"
             sx={{ fontFamily: "iran-sans", backgroundColor: "#000" }}
+            href={paymentLink} // لینک پرداخت را به دکمه پرداخت متصل کنید
+            disabled={!paymentLink || loading} 
           >
-            ثبت سفارش
+           پرداخت
           </Button>
-        </Link>
+        {/* </Link> */}
         <Grid>
           <Typography
             color={"#81858b"}
